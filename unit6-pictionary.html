@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit 6 Pictionary - Entertainment & Media</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Fredoka', cursive;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: white;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .game-container {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 1200px;
+            width: 100%;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .game-setup {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .team-setup {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .team {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 15px;
+            min-width: 200px;
+        }
+        
+        .team h3 {
+            color: #feca57;
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+        }
+        
+        .team-score {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+        
+        .team-members {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .member-input {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 10px;
+            padding: 10px;
+            color: white;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+        
+        .member-input::placeholder {
+            color: rgba(255,255,255,0.5);
+        }
+        
+        .category-filter {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        
+        .filter-btn.active {
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            border-color: transparent;
+        }
+        
+        .filter-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .game-area {
+            display: none;
+        }
+        
+        .game-area.active {
+            display: block;
+        }
+        
+        .current-word-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .word-display {
+            background: rgba(254, 202, 87, 0.2);
+            border: 2px solid rgba(254, 202, 87, 0.5);
+            padding: 20px;
+            border-radius: 15px;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .word-content {
+            text-align: center;
+        }
+        
+        .word-text {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .word-chinese {
+            font-size: 1.2rem;
+            color: #feca57;
+            margin-bottom: 10px;
+        }
+        
+        .word-category {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            color: #feca57;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .word-actions {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+        
+        .action-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        
+        .current-team {
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            padding: 15px 30px;
+            border-radius: 50px;
+            display: inline-block;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .timer-section {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .timer {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #feca57;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+        }
+        
+        .timer.warning {
+            color: #ff6b6b;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .canvas-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .drawing-area {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .canvas-container {
+            background: white;
+            border-radius: 15px;
+            padding: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        
+        #drawingCanvas {
+            border-radius: 10px;
+            cursor: crosshair;
+            display: block;
+            width: 100%;
+            touch-action: none;
+        }
+        
+        .drawing-tools {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+        
+        .tool-group {
+            margin-bottom: 15px;
+        }
+        
+        .tool-label {
+            color: #feca57;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .color-palette {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .color-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .color-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .color-btn.active {
+            border-color: white;
+            box-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+        
+        .brush-sizes {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .size-btn {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .size-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .size-btn.active {
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            border-color: transparent;
+        }
+        
+        .tool-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .tool-btn {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            font-weight: 600;
+        }
+        
+        .tool-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        
+        .guesser-area {
+            flex: 0 0 300px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+        }
+        
+        .guesser-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .guesser-title {
+            color: #feca57;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .guess-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 10px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 1.1rem;
+            font-family: inherit;
+            margin-bottom: 10px;
+        }
+        
+        .guess-input::placeholder {
+            color: rgba(255,255,255,0.5);
+        }
+        
+        .guess-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(45deg, #4CAF50, #8BC34A);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        
+        .guess-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(76,175,80,0.4);
+        }
+        
+        .guess-history {
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .guess-item {
+            background: rgba(255,255,255,0.1);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .guess-text {
+            flex: 1;
+        }
+        
+        .guess-result {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .guess-result.correct {
+            color: #4CAF50;
+        }
+        
+        .guess-result.incorrect {
+            color: #ff6b6b;
+        }
+        
+        .game-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255,107,107,0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        
+        .btn-success {
+            background: linear-gradient(45deg, #4CAF50, #8BC34A);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .round-result {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            display: none;
+            text-align: center;
+        }
+        
+        .round-result.show {
+            display: block;
+        }
+        
+        .result-message {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .result-word {
+            font-size: 1.2rem;
+            color: #feca57;
+            margin-bottom: 15px;
+        }
+        
+        .game-over {
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            display: none;
+        }
+        
+        .game-over.show {
+            display: block;
+        }
+        
+        .winner-announcement {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #feca57;
+            margin-bottom: 20px;
+        }
+        
+        .final-scores {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .final-score {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 15px;
+            min-width: 150px;
+        }
+        
+        .final-score.winner {
+            background: linear-gradient(45deg, #4CAF50, #8BC34A);
+        }
+        
+        .instructions {
+            background: rgba(254, 202, 87, 0.2);
+            border: 2px solid rgba(254, 202, 87, 0.5);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .instructions h3 {
+            color: #feca57;
+            margin-bottom: 10px;
+        }
+        
+        .instructions ul {
+            text-align: left;
+            margin-left: 20px;
+        }
+        
+        .instructions li {
+            margin: 5px 0;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .canvas-section {
+                flex-direction: column;
+            }
+            
+            .guesser-area {
+                flex: 1;
+                width: 100%;
+            }
+            
+            .team-setup {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .timer {
+                font-size: 2rem;
+            }
+            
+            .word-text {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🎨 Unit 6 Pictionary</h1>
+        <p style="color: #bbb; font-size: 1.2rem;">Entertainment & Media Drawing Game</p>
+    </header>
+    
+    <main class="game-container">
+        <!-- Setup Section -->
+        <section class="game-setup" id="setupSection">
+            <div class="instructions">
+                <h3>📋 How to Play</h3>
+                <ul>
+                    <li>Form 2 teams with 2-4 players each</li>
+                    <li>One player draws entertainment words while others guess</li>
+                    <li>No letters, numbers, or symbols allowed</li>
+                    <li>Correct guess = 1 point</li>
+                    <li>First team to 8 points wins!</li>
+                </ul>
+            </div>
+            
+            <div class="team-setup">
+                <div class="team">
+                    <h3>🔴 Team A</h3>
+                    <div class="team-score" id="teamAScore">0</div>
+                    <div class="team-members">
+                        <input type="text" class="member-input" id="teamA1" placeholder="Player 1 name">
+                        <input type="text" class="member-input" id="teamA2" placeholder="Player 2 name">
+                        <input type="text" class="member-input" id="teamA3" placeholder="Player 3 name">
+                        <input type="text" class="member-input" id="teamA4" placeholder="Player 4 name">
+                    </div>
+                </div>
+                
+                <div class="team">
+                    <h3>🔵 Team B</h3>
+                    <div class="team-score" id="teamBScore">0</div>
+                    <div class="team-members">
+                        <input type="text" class="member-input" id="teamB1" placeholder="Player 1 name">
+                        <input type="text" class="member-input" id="teamB2" placeholder="Player 2 name">
+                        <input type="text" class="member-input" id="teamB3" placeholder="Player 3 name">
+                        <input type="text" class="member-input" id="teamB4" placeholder="Player 4 name">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="category-filter">
+                <button class="filter-btn active" onclick="setCategoryFilter('all')">All Categories</button>
+                <button class="filter-btn" onclick="setCategoryFilter('Movies & TV')">Movies & TV</button>
+                <button class="filter-btn" onclick="setCategoryFilter('Music & Performance')">Music & Performance</button>
+                <button class="filter-btn" onclick="setCategoryFilter('Media & Technology')">Media & Technology</button>
+                <button class="filter-btn" onclick="setCategoryFilter('Entertainment')">Entertainment</button>
+            </div>
+            
+            <button class="btn btn-primary" onclick="startGame()">🎮 Start Game</button>
+        </section>
+        
+        <!-- Game Area -->
+        <section class="game-area" id="gameArea">
+            <div class="current-team" id="currentTeamDisplay">🔴 Team A's Turn</div>
+            
+            <div class="current-word-section">
+                <div class="word-display">
+                    <div class="word-content" id="wordContent">
+                        <div class="word-text" id="wordText">Click "Get New Word" to Start</div>
+                        <div class="word-chinese" id="wordChinese"></div>
+                        <div class="word-category" id="wordCategory"></div>
+                    </div>
+                    <div class="word-actions">
+                        <button class="action-btn" onclick="speakWord()">🔊</button>
+                        <button class="action-btn" onclick="getHint()">💡</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="timer-section">
+                <div class="timer" id="timer">90</div>
+                <div>Seconds Remaining</div>
+            </div>
+            
+            <div class="canvas-section">
+                <div class="drawing-area">
+                    <div class="canvas-container">
+                        <canvas id="drawingCanvas" width="600" height="400"></canvas>
+                    </div>
+                    
+                    <div class="drawing-tools">
+                        <div class="tool-group">
+                            <label class="tool-label">Colors:</label>
+                            <div class="color-palette">
+                                <div class="color-btn active" style="background: #000000;" onclick="setColor('#000000')"></div>
+                                <div class="color-btn" style="background: #ff6b6b;" onclick="setColor('#ff6b6b')"></div>
+                                <div class="color-btn" style="background: #4CAF50;" onclick="setColor('#4CAF50')"></div>
+                                <div class="color-btn" style="background: #2196F3;" onclick="setColor('#2196F3')"></div>
+                                <div class="color-btn" style="background: #feca57;" onclick="setColor('#feca57')"></div>
+                                <div class="color-btn" style="background: #9C27B0;" onclick="setColor('#9C27B0')"></div>
+                                <div class="color-btn" style="background: #FF9800;" onclick="setColor('#FF9800')"></div>
+                                <div class="color-btn" style="background: #795548;" onclick="setColor('#795548')"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="tool-group">
+                            <label class="tool-label">Brush Size:</label>
+                            <div class="brush-sizes">
+                                <button class="size-btn" onclick="setBrushSize(2)">
+                                    <div style="width: 6px; height: 6px; background: white; border-radius: 50%;"></div>
+                                </button>
+                                <button class="size-btn active" onclick="setBrushSize(5)">
+                                    <div style="width: 10px; height: 10px; background: white; border-radius: 50%;"></div>
+                                </button>
+                                <button class="size-btn" onclick="setBrushSize(10)">
+                                    <div style="width: 15px; height: 15px; background: white; border-radius: 50%;"></div>
+                                </button>
+                                <button class="size-btn" onclick="setBrushSize(20)">
+                                    <div style="width: 20px; height: 20px; background: white; border-radius: 50%;"></div>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="tool-group">
+                            <label class="tool-label">Tools:</label>
+                            <div class="tool-buttons">
+                                <button class="tool-btn" onclick="clearCanvas()">🗑️ Clear</button>
+                                <button class="tool-btn" onclick="useEraser()">🧹 Eraser</button>
+                                <button class="tool-btn" onclick="usePen()">✏️ Pen</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="guesser-area">
+                    <div class="guesser-header">
+                        <div class="guesser-title">🤔 Make a Guess!</div>
+                    </div>
+                    
+                    <input type="text" class="guess-input" id="guessInput" placeholder="Type your guess here...">
+                    <button class="guess-btn" onclick="makeGuess()">Submit Guess</button>
+                    
+                    <div class="guess-history" id="guessHistory">
+                        <strong>Previous Guesses:</strong>
+                        <div id="guessList"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="game-controls">
+                <button class="btn btn-primary" id="newWordBtn" onclick="getNewWord()">🎲 Get New Word</button>
+                <button class="btn btn-success" id="startTimerBtn" onclick="startTimer()">⏱️ Start Timer</button>
+                <button class="btn btn-danger" onclick="skipWord()">⏭️ Skip Word</button>
+                <button class="btn btn-secondary" onclick="nextTurn()">🔄 Next Turn</button>
+            </div>
+            
+            <div class="round-result" id="roundResult">
+                <div class="result-message" id="resultMessage"></div>
+                <div class="result-word" id="resultWord"></div>
+                <button class="btn btn-primary" onclick="nextTurn()">Next Turn</button>
+            </div>
+        </section>
+        
+        <!-- Game Over Section -->
+        <section class="game-over" id="gameOverSection">
+            <div class="winner-announcement" id="winnerAnnouncement">🎉 Team A Wins!</div>
+            <div class="final-scores">
+                <div class="final-score">
+                    <h3>🔴 Team A</h3>
+                    <div style="font-size: 2rem; font-weight: 700;" id="finalScoreA">0</div>
+                </div>
+                <div class="final-score">
+                    <h3>🔵 Team B</h3>
+                    <div style="font-size: 2rem; font-weight: 700;" id="finalScoreB">0</div>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="resetGame()">🔄 New Game</button>
+        </section>
+    </main>
+    
+    <script>
+        // Unit 6 Entertainment & Media Vocabulary
+        const unit6Vocabulary = [
+            // Movies & TV
+            { english: "movie", chinese: "电影", category: "Movies & TV", hint: "Watch at the cinema" },
+            { english: "cinema", chinese: "电影院", category: "Movies & TV", hint: "Place to watch movies" },
+            { english: "television", chinese: "电视", category: "Movies & TV", hint: "TV screen entertainment" },
+            { english: "actor", chinese: "演员", category: "Movies & TV", hint: "Performs in movies" },
+            { english: "actress", chinese: "女演员", category: "Movies & TV", hint: "Female performer" },
+            { english: "director", chinese: "导演", category: "Movies & TV", hint: "Controls the movie" },
+            { english: "character", chinese: "角色", category: "Movies & TV", hint: "Person in a story" },
+            { english: "screen", chinese: "屏幕", category: "Movies & TV", hint: "Display surface" },
+            { english: "series", chinese: "连续剧", category: "Movies & TV", hint: "TV episodes" },
+            { english: "episode", chinese: "集", category: "Movies & TV", hint: "One part of a series" },
+            { english: "cartoon", chinese: "动画片", category: "Movies & TV", hint: "Animated show" },
+            { english: "animation", chinese: "动画", category: "Movies & TV", hint: "Drawing movement" },
+            { english: "documentary", chinese: "纪录片", category: "Movies & TV", hint: "Real life story" },
+            { english: "comedy", chinese: "喜剧", category: "Movies & TV", hint: "Funny show" },
+            { english: "drama", chinese: "戏剧", category: "Movies & TV", hint: "Serious story" },
+            { english: "action", chinese: "动作", category: "Movies & TV", hint: "Exciting movement" },
+            
+            // Music & Performance
+            { english: "music", chinese: "音乐", category: "Music & Performance", hint: "Sound with rhythm" },
+            { english: "song", chinese: "歌曲", category: "Music & Performance", hint: "Sung with lyrics" },
+            { english: "concert", chinese: "音乐会", category: "Music & Performance", hint: "Live music show" },
+            { english: "performance", chinese: "表演", category: "Music & Performance", hint: "Live entertainment" },
+            { english: "musician", chinese: "音乐家", category: "Music & Performance", hint: "Plays music" },
+            { english: "singer", chinese: "歌手", category: "Music & Performance", hint: "Sings songs" },
+            { english: "band", chinese: "乐队", category: "Music & Performance", hint: "Group of musicians" },
+            { english: "album", chinese: "专辑", category: "Music & Performance", hint: "Collection of songs" },
+            { english: "melody", chinese: "旋律", category: "Music & Performance", hint: "Tune sequence" },
+            { english: "rhythm", chinese: "节奏", category: "Music & Performance", hint: "Beat pattern" },
+            { english: "instrument", chinese: "乐器", category: "Music & Performance", hint: "Music tool" },
+            { english: "guitar", chinese: "吉他", category: "Music & Performance", hint: "Six-string instrument" },
+            { english: "piano", chinese: "钢琴", category: "Music & Performance", hint: "Black and white keys" },
+            { english: "drum", chinese: "鼓", category: "Music & Performance", hint: "Percussion instrument" },
+            { english: "stage", chinese: "舞台", category: "Music & Performance", hint: "Performance platform" },
+            { english: "audience", chinese: "观众", category: "Music & Performance", hint: "People watching" },
+            { english: "applause", chinese: "掌声", category: "Music & Performance", hint: "Clapping sound" },
+            
+            // Media & Technology
+            { english: "internet", chinese: "互联网", category: "Media & Technology", hint: "Global network" },
+            { english: "website", chinese: "网站", category: "Media & Technology", hint: "Online page" },
+            { english: "social media", chinese: "社交媒体", category: "Media & Technology", hint: "Online sharing" },
+            { english: "video", chinese: "视频", category: "Media & Technology", hint: "Moving pictures" },
+            { english: "streaming", chinese: "流媒体", category: "Media & Technology", hint: "Online watching" },
+            { english: "podcast", chinese: "播客", category: "Media & Technology", hint: "Audio show" },
+            { english: "channel", chinese: "频道", category: "Media & Technology", hint: "Content stream" },
+            { english: "content", chinese: "内容", category: "Media & Technology", hint: "Information material" },
+            { english: "platform", chinese: "平台", category: "Media & Technology", hint: "Service base" },
+            { english: "subscribe", chinese: "订阅", category: "Media & Technology", hint: "Follow content" },
+            { english: "download", chinese: "下载", category: "Media & Technology", hint: "Save from internet" },
+            { english: "upload", chinese: "上传", category: "Media & Technology", hint: "Put online" },
+            { english: "share", chinese: "分享", category: "Media & Technology", hint: "Give to others" },
+            { english: "like", chinese: "点赞", category: "Media & Technology", hint: "Social approval" },
+            { english: "comment", chinese: "评论", category: "Media & Technology", hint: "Written opinion" },
+            
+            // General Entertainment
+            { english: "game", chinese: "游戏", category: "Entertainment", hint: "Play activity" },
+            { english: "entertainment", chinese: "娱乐", category: "Entertainment", hint: "Fun activity" },
+            { english: "fun", chinese: "乐趣", category: "Entertainment", hint: "Enjoyment" },
+            { english: "popular", chinese: "受欢迎的", category: "Entertainment", hint: "Well-liked" },
+            { english: "famous", chinese: "著名的", category: "Entertainment", hint: "Well-known" }
+        ];
+        
+        // Canvas drawing variables
+        let canvas, ctx;
+        let isDrawing = false;
+        let currentColor = '#000000';
+        let currentBrushSize = 5;
+        let isEraser = false;
+        
+        // Game variables
+        let currentWord = null;
+        let currentTeam = 'A';
+        let teamAScore = 0;
+        let teamBScore = 0;
+        let timerInterval = null;
+        let timeRemaining = 90;
+        let gameActive = false;
+        let categoryFilter = 'all';
+        let usedWords = [];
+        let guessHistory = [];
+        
+        function initCanvas() {
+            canvas = document.getElementById('drawingCanvas');
+            ctx = canvas.getContext('2d');
+            
+            // Set canvas size
+            const container = canvas.parentElement;
+            const rect = container.getBoundingClientRect();
+            canvas.width = Math.min(600, rect.width - 20);
+            canvas.height = 400;
+            
+            // Set initial drawing settings
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            
+            // Mouse events
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+            
+            // Touch events
+            canvas.addEventListener('touchstart', handleTouch);
+            canvas.addEventListener('touchmove', handleTouch);
+            canvas.addEventListener('touchend', stopDrawing);
+        }
+        
+        function startDrawing(e) {
+            isDrawing = true;
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        }
+        
+        function draw(e) {
+            if (!isDrawing) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            ctx.globalCompositeOperation = isEraser ? 'destination-out' : 'source-over';
+            ctx.strokeStyle = currentColor;
+            ctx.lineWidth = currentBrushSize;
+            
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        }
+        
+        function stopDrawing() {
+            if (isDrawing) {
+                isDrawing = false;
+                ctx.beginPath();
+            }
+        }
+        
+        function handleTouch(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent(e.type === 'touchstart' ? 'mousedown' : 
+                                             e.type === 'touchmove' ? 'mousemove' : 'mouseup', {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            canvas.dispatchEvent(mouseEvent);
+        }
+        
+        function setColor(color) {
+            currentColor = color;
+            isEraser = false;
+            
+            // Update UI
+            document.querySelectorAll('.color-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+        
+        function setBrushSize(size) {
+            currentBrushSize = size;
+            
+            // Update UI
+            document.querySelectorAll('.size-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+        
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+        
+        function useEraser() {
+            isEraser = true;
+        }
+        
+        function usePen() {
+            isEraser = false;
+        }
+        
+        function setCategoryFilter(category) {
+            categoryFilter = category;
+            
+            // Update filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+        
+        function getFilteredWords() {
+            if (categoryFilter === 'all') {
+                return unit6Vocabulary;
+            }
+            return unit6Vocabulary.filter(word => word.category === categoryFilter);
+        }
+        
+        function startGame() {
+            // Validate team setup
+            const teamAPlayers = getTeamPlayers('A');
+            const teamBPlayers = getTeamPlayers('B');
+            
+            if (teamAPlayers.length === 0 || teamBPlayers.length === 0) {
+                alert('Please enter at least one player name for each team!');
+                return;
+            }
+            
+            // Initialize canvas
+            initCanvas();
+            
+            // Reset game state
+            currentTeam = 'A';
+            teamAScore = 0;
+            teamBScore = 0;
+            usedWords = [];
+            guessHistory = [];
+            gameActive = true;
+            
+            // Update UI
+            document.getElementById('setupSection').style.display = 'none';
+            document.getElementById('gameArea').classList.add('active');
+            document.getElementById('gameOverSection').classList.remove('show');
+            
+            updateScores();
+            updateTeamDisplay();
+        }
+        
+        function getTeamPlayers(team) {
+            const players = [];
+            for (let i = 1; i <= 4; i++) {
+                const input = document.getElementById(`team${team}${i}`);
+                if (input && input.value.trim()) {
+                    players.push(input.value.trim());
+                }
+            }
+            return players;
+        }
+        
+        function getNewWord() {
+            const filteredWords = getFilteredWords();
+            const availableWords = filteredWords.filter(word => 
+                !usedWords.find(used => used.english === word.english)
+            );
+            
+            if (availableWords.length === 0) {
+                // Reset used words if all have been used
+                usedWords = [];
+                return getNewWord();
+            }
+            
+            currentWord = availableWords[Math.floor(Math.random() * availableWords.length)];
+            
+            document.getElementById('wordText').textContent = currentWord.english;
+            document.getElementById('wordChinese').textContent = currentWord.chinese;
+            document.getElementById('wordCategory').textContent = currentWord.category;
+            
+            // Clear canvas for new word
+            clearCanvas();
+            
+            // Clear guess history
+            guessHistory = [];
+            updateGuessHistory();
+        }
+        
+        function startTimer() {
+            if (!currentWord) {
+                alert('Please get a word first!');
+                return;
+            }
+            
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            
+            timeRemaining = 90;
+            updateTimerDisplay();
+            
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                updateTimerDisplay();
+                
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    timeUp();
+                }
+            }, 1000);
+        }
+        
+        function updateTimerDisplay() {
+            const timerElement = document.getElementById('timer');
+            timerElement.textContent = timeRemaining;
+            
+            if (timeRemaining <= 10) {
+                timerElement.classList.add('warning');
+            } else {
+                timerElement.classList.remove('warning');
+            }
+        }
+        
+        function timeUp() {
+            showRoundResult(false, "Time's up!");
+        }
+        
+        function makeGuess() {
+            const guessInput = document.getElementById('guessInput');
+            const guess = guessInput.value.trim().toLowerCase();
+            
+            if (!guess || !currentWord) {
+                return;
+            }
+            
+            const isCorrect = guess === currentWord.english.toLowerCase();
+            
+            // Add to history
+            guessHistory.push({
+                text: guess,
+                correct: isCorrect,
+                time: new Date().toLocaleTimeString()
+            });
+            
+            updateGuessHistory();
+            
+            if (isCorrect) {
+                // Award point to current team
+                if (currentTeam === 'A') {
+                    teamAScore++;
+                } else {
+                    teamBScore++;
+                }
+                
+                updateScores();
+                showRoundResult(true, "Correct! Well done!");
+                
+                // Stop timer
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                }
+            } else {
+                // Show feedback
+                guessInput.style.borderColor = '#ff6b6b';
+                setTimeout(() => {
+                    guessInput.style.borderColor = 'rgba(255,255,255,0.3)';
+                }, 1000);
+            }
+            
+            guessInput.value = '';
+        }
+        
+        function updateGuessHistory() {
+            const guessList = document.getElementById('guessList');
+            guessList.innerHTML = '';
+            
+            guessHistory.slice(-5).reverse().forEach(guess => {
+                const guessItem = document.createElement('div');
+                guessItem.className = 'guess-item';
+                
+                guessItem.innerHTML = `
+                    <span class="guess-text">${guess.text}</span>
+                    <span class="guess-result ${guess.correct ? 'correct' : 'incorrect'}">
+                        ${guess.correct ? '✓' : '✗'}
+                    </span>
+                `;
+                
+                guessList.appendChild(guessItem);
+            });
+        }
+        
+        function skipWord() {
+            if (!currentWord) {
+                alert('Please get a word first!');
+                return;
+            }
+            
+            showRoundResult(false, "Word skipped");
+        }
+        
+        function showRoundResult(success, message) {
+            const resultSection = document.getElementById('roundResult');
+            const resultMessage = document.getElementById('resultMessage');
+            const resultWord = document.getElementById('resultWord');
+            
+            if (success) {
+                resultMessage.textContent = message;
+                resultMessage.style.color = '#4CAF50';
+            } else {
+                resultMessage.textContent = message;
+                resultMessage.style.color = '#ff6b6b';
+            }
+            
+            if (currentWord) {
+                resultWord.textContent = `The word was: ${currentWord.english} (${currentWord.chinese})`;
+            }
+            
+            resultSection.classList.add('show');
+            
+            // Stop timer if running
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
+        
+        function nextTurn() {
+            // Hide result
+            document.getElementById('roundResult').classList.remove('show');
+            
+            // Clear word display
+            document.getElementById('wordText').textContent = 'Click "Get New Word" to Start';
+            document.getElementById('wordChinese').textContent = '';
+            document.getElementById('wordCategory').textContent = '';
+            currentWord = null;
+            
+            // Clear guess input
+            document.getElementById('guessInput').value = '';
+            
+            // Check for winner
+            if (teamAScore >= 8 || teamBScore >= 8) {
+                endGame();
+                return;
+            }
+            
+            // Switch teams
+            currentTeam = currentTeam === 'A' ? 'B' : 'A';
+            updateTeamDisplay();
+            updateScores();
+            
+            // Reset timer
+            timeRemaining = 90;
+            updateTimerDisplay();
+            
+            // Clear canvas
+            clearCanvas();
+        }
+        
+        function updateTeamDisplay() {
+            const display = document.getElementById('currentTeamDisplay');
+            if (currentTeam === 'A') {
+                display.textContent = '🔴 Team A\'s Turn';
+            } else {
+                display.textContent = '🔵 Team B\'s Turn';
+            }
+        }
+        
+        function updateScores() {
+            document.getElementById('teamAScore').textContent = teamAScore;
+            document.getElementById('teamBScore').textContent = teamBScore;
+        }
+        
+        function endGame() {
+            gameActive = false;
+            
+            document.getElementById('gameArea').classList.remove('active');
+            document.getElementById('gameOverSection').classList.add('show');
+            
+            const winner = teamAScore > teamBScore ? 'A' : 'B';
+            const winnerAnnouncement = document.getElementById('winnerAnnouncement');
+            
+            if (winner === 'A') {
+                winnerAnnouncement.textContent = '🎉 Team A Wins!';
+            } else {
+                winnerAnnouncement.textContent = '🎉 Team B Wins!';
+            }
+            
+            document.getElementById('finalScoreA').textContent = teamAScore;
+            document.getElementById('finalScoreB').textContent = teamBScore;
+            
+            // Add winner styling
+            setTimeout(() => {
+                const finalScores = document.querySelectorAll('.final-score');
+                finalScores.forEach(score => {
+                    score.classList.remove('winner');
+                });
+                if (winner === 'A') {
+                    finalScores[0].classList.add('winner');
+                } else {
+                    finalScores[1].classList.add('winner');
+                }
+            }, 100);
+        }
+        
+        function resetGame() {
+            // Reset all variables
+            currentTeam = 'A';
+            teamAScore = 0;
+            teamBScore = 0;
+            usedWords = [];
+            currentWord = null;
+            guessHistory = [];
+            gameActive = false;
+            
+            // Clear canvas
+            if (ctx) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+            
+            // Clear player names
+            document.querySelectorAll('.member-input').forEach(input => {
+                input.value = '';
+            });
+            
+            // Show setup section
+            document.getElementById('gameOverSection').classList.remove('show');
+            document.getElementById('gameArea').classList.remove('active');
+            document.getElementById('setupSection').style.display = 'block';
+            
+            // Reset scores
+            updateScores();
+        }
+        
+        function speakWord() {
+            if (currentWord && 'speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(currentWord.english);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.8;
+                speechSynthesis.speak(utterance);
+            }
+        }
+        
+        function getHint() {
+            if (currentWord) {
+                alert(`Hint: ${currentWord.hint}`);
+            }
+        }
+        
+        // Handle Enter key for guess input
+        document.addEventListener('DOMContentLoaded', function() {
+            const guessInput = document.getElementById('guessInput');
+            if (guessInput) {
+                guessInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        makeGuess();
+                    }
+                });
+            }
+            
+            updateScores();
+        });
+    </script>
+</body>
+</html>

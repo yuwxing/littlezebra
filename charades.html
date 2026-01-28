@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Charades - Vocabulary Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Fredoka', cursive;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 900px;
+            width: 100%;
+        }
+        
+        .word-display {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .word-card {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            font-size: 3rem;
+            font-weight: 700;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(102,126,234,0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .word-card::before {
+            content: '🎭';
+            position: absolute;
+            font-size: 8rem;
+            opacity: 0.1;
+            top: -20px;
+            right: -20px;
+        }
+        
+        .timer-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .timer {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #ff6b6b;
+            margin-bottom: 10px;
+        }
+        
+        .timer-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        .timer-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            transition: width 1s linear;
+            border-radius: 10px;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(76,175,80,0.4);
+        }
+        
+        .btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(76,175,80,0.6);
+        }
+        
+        .btn.stop {
+            background: linear-gradient(45deg, #f44336, #da190b);
+        }
+        
+        .btn.skip {
+            background: linear-gradient(45deg, #ff9800, #f57c00);
+        }
+        
+        .score-display {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+        }
+        
+        .score-item {
+            text-align: center;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            min-width: 150px;
+        }
+        
+        .score-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .score-label {
+            font-size: 1rem;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .teams-section {
+            margin-bottom: 30px;
+        }
+        
+        .teams-container {
+            display: flex;
+            justify-content: space-around;
+            gap: 20px;
+        }
+        
+        .team {
+            flex: 1;
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .team.active {
+            border-color: #667eea;
+            background: #e8f0fe;
+        }
+        
+        .team-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .team-score {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .instructions {
+            background: #fff3cd;
+            border: 2px solid #ffeaa7;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .instructions h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        
+        .instructions p {
+            color: #856404;
+            line-height: 1.6;
+        }
+        
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+        
+        .difficulty-selector {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .difficulty-btn {
+            background: #e0e0e0;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            margin: 0 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .difficulty-btn.active {
+            background: #667eea;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="location.href='index.html'">← Back to Games</button>
+    
+    <header>
+        <h1>🎭 Charades Game</h1>
+        <p>Act out the words without speaking!</p>
+    </header>
+    
+    <main class="game-container">
+        <div class="instructions">
+            <h3>📋 How to Play</h3>
+            <p>One person acts out the word without speaking or making sounds. Team tries to guess within 60 seconds!</p>
+        </div>
+        
+        <div class="difficulty-selector">
+            <button class="difficulty-btn active" onclick="setDifficulty('easy')">Easy</button>
+            <button class="difficulty-btn" onclick="setDifficulty('medium')">Medium</button>
+            <button class="difficulty-btn" onclick="setDifficulty('hard')">Hard</button>
+        </div>
+        
+        <div class="teams-section">
+            <div class="teams-container">
+                <div class="team active" id="team1">
+                    <div class="team-name">Team 1</div>
+                    <div class="team-score" id="team1-score">0</div>
+                </div>
+                <div class="team" id="team2">
+                    <div class="team-name">Team 2</div>
+                    <div class="team-score" id="team2-score">0</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="word-display">
+            <div class="word-card" id="word-card">
+                Click "Start Game" to begin!
+            </div>
+        </div>
+        
+        <div class="timer-container">
+            <div class="timer" id="timer">60</div>
+            <div class="timer-bar">
+                <div class="timer-fill" id="timer-fill"></div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn" onclick="startGame()">Start Game</button>
+            <button class="btn stop" onclick="stopGame()">Correct! ✓</button>
+            <button class="btn skip" onclick="skipWord()">Skip Word</button>
+            <button class="btn" onclick="switchTeams()">Switch Teams</button>
+        </div>
+        
+        <div class="score-display">
+            <div class="score-item">
+                <div class="score-value" id="round-number">1</div>
+                <div class="score-label">Round</div>
+            </div>
+            <div class="score-item">
+                <div class="score-value" id="words-left">10</div>
+                <div class="score-label">Words Left</div>
+            </div>
+            <div class="score-item">
+                <div class="score-value" id="total-score">0</div>
+                <div class="score-label">Total Score</div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        const vocabulary = {
+            easy: [
+                'CAT', 'DOG', 'BIRD', 'FISH', 'LION',
+                'BEAR', 'MONKEY', 'RABBIT', 'TIGER', 'ELEPHANT',
+                'DUCK', 'COW', 'PIG', 'HORSE', 'SHEEP'
+            ],
+            medium: [
+                'PENGUIN', 'GIRAFFE', 'ZEBRA', 'KANGAROO', 'DOLPHIN',
+                'BUTTERFLY', 'SNAKE', 'TURTLE', 'CROCODILE', 'EAGLE',
+                'OCTOPUS', 'WHALE', 'SHARK', 'OWL', 'FOX'
+            ],
+            hard: [
+                'RHINOCEROS', 'HIPPOPOTAMUS', 'CHIMPANZEE', 'PLATYPUS', 'ARMADILLO',
+                'CHAMELEON', 'RHINOCEROS', 'WALRUS', 'PORCUPINE', 'BARRACUDA',
+                'GOLDFINCH', 'FLAMINGO', 'PEACOCK', 'HEDGEHOG', 'KOMODO DRAGON'
+            ]
+        };
+        
+        let currentDifficulty = 'easy';
+        let currentWord = '';
+        let timeLeft = 60;
+        let timerInterval = null;
+        let currentTeam = 1;
+        let team1Score = 0;
+        let team2Score = 0;
+        let roundNumber = 1;
+        let wordsPlayed = 0;
+        let totalWords = 10;
+        let gameActive = false;
+        let usedWords = [];
+        
+        function setDifficulty(difficulty) {
+            currentDifficulty = difficulty;
+            document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            resetGame();
+        }
+        
+        function startGame() {
+            if (gameActive) return;
+            
+            gameActive = true;
+            timeLeft = 60;
+            usedWords = [];
+            getNextWord();
+            startTimer();
+        }
+        
+        function getNextWord() {
+            const availableWords = vocabulary[currentDifficulty].filter(word => !usedWords.includes(word));
+            
+            if (availableWords.length === 0) {
+                showMessage('All words used! Game Over!', 'success');
+                stopGame();
+                return;
+            }
+            
+            currentWord = availableWords[Math.floor(Math.random() * availableWords.length)];
+            usedWords.push(currentWord);
+            
+            document.getElementById('word-card').textContent = currentWord;
+            updateWordDisplay();
+        }
+        
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').textContent = timeLeft;
+                
+                const percentage = (timeLeft / 60) * 100;
+                document.getElementById('timer-fill').style.width = percentage + '%';
+                
+                if (timeLeft <= 10) {
+                    document.getElementById('timer').style.color = '#ff0000';
+                } else {
+                    document.getElementById('timer').style.color = '#ff6b6b';
+                }
+                
+                if (timeLeft <= 0) {
+                    stopGame();
+                    showMessage('⏰ Time\'s up!', 'timeout');
+                }
+            }, 1000);
+        }
+        
+        function stopGame() {
+            gameActive = false;
+            clearInterval(timerInterval);
+            
+            if (currentTeam === 1) {
+                team1Score++;
+            } else {
+                team2Score++;
+            }
+            
+            updateScores();
+            updateWordDisplay();
+        }
+        
+        function skipWord() {
+            if (!gameActive) return;
+            
+            getNextWord();
+            timeLeft = Math.max(0, timeLeft - 5); // Penalty for skipping
+            document.getElementById('timer').textContent = timeLeft;
+        }
+        
+        function switchTeams() {
+            currentTeam = currentTeam === 1 ? 2 : 1;
+            document.querySelectorAll('.team').forEach(team => {
+                team.classList.remove('active');
+            });
+            document.getElementById(`team${currentTeam}`).classList.add('active');
+        }
+        
+        function updateScores() {
+            document.getElementById('team1-score').textContent = team1Score;
+            document.getElementById('team2-score').textContent = team2Score;
+            document.getElementById('total-score').textContent = team1Score + team2Score;
+        }
+        
+        function updateWordDisplay() {
+            wordsPlayed = usedWords.length;
+            document.getElementById('round-number').textContent = roundNumber;
+            document.getElementById('words-left').textContent = Math.max(0, totalWords - wordsPlayed);
+        }
+        
+        function resetGame() {
+            clearInterval(timerInterval);
+            gameActive = false;
+            timeLeft = 60;
+            currentWord = '';
+            usedWords = [];
+            wordsPlayed = 0;
+            
+            document.getElementById('timer').textContent = '60';
+            document.getElementById('timer-fill').style.width = '100%';
+            document.getElementById('word-card').textContent = 'Click "Start Game" to begin!';
+            
+            updateWordDisplay();
+        }
+        
+        function showMessage(text, type) {
+            const wordCard = document.getElementById('word-card');
+            const originalContent = wordCard.textContent;
+            
+            wordCard.style.background = type === 'success' ? 
+                'linear-gradient(45deg, #4CAF50, #45a049)' : 
+                'linear-gradient(45deg, #f44336, #da190b)';
+            
+            wordCard.textContent = text;
+            
+            setTimeout(() => {
+                wordCard.style.background = 'linear-gradient(45deg, #667eea, #764ba2)';
+                wordCard.textContent = originalContent;
+            }, 2000);
+        }
+        
+        // Initialize
+        updateScores();
+        updateWordDisplay();
+    </script>
+</body>
+</html>

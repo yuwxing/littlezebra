@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hangman Game - Unit 4 Food & Health</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Fredoka', cursive;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 900px;
+            width: 100%;
+        }
+        
+        .game-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-item {
+            background: #f8f9fa;
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ff6b6b;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .hangman-display {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .hangman-svg {
+            width: 200px;
+            height: 250px;
+            margin: 0 auto;
+        }
+        
+        .word-display {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .word-letters {
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: 15px;
+            color: #333;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .category-hint {
+            font-size: 1.2rem;
+            color: #666;
+            background: #f0f0f0;
+            padding: 10px 20px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        
+        .keyboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+            gap: 10px;
+            margin-bottom: 30px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .key {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .key:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+        
+        .key:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        
+        .key.wrong {
+            background: linear-gradient(45deg, #f44336, #da190b);
+            animation: wrongShake 0.6s ease;
+        }
+        
+        @keyframes wrongShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .controls {
+            text-align: center;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+            margin: 0 10px;
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(102,126,234,0.6);
+        }
+        
+        .btn.secondary {
+            background: linear-gradient(45deg, #ff9800, #f57c00);
+        }
+        
+        .btn.danger {
+            background: linear-gradient(45deg, #f44336, #da190b);
+        }
+        
+        .message {
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+        
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+        
+        .message.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 2px solid #bee5eb;
+        }
+        
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+        
+        .food-emoji {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .word-letters {
+                font-size: 2rem;
+                letter-spacing: 10px;
+            }
+            
+            .keyboard {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="location.href='unit4-master.html'">← Back to Unit 4</button>
+    
+    <header>
+        <h1>🎯 Hangman - Food & Health</h1>
+        <p>Guess the food word letter by letter!<br><span style="font-size: 1.2rem;">猜字游戏 - 食物健康版</span></p>
+    </header>
+    
+    <main class="game-container">
+        <div class="game-stats">
+            <div class="stat-item">
+                <div class="stat-value" id="wins">0</div>
+                <div class="stat-label">Wins<br><span style="font-size: 0.8rem;">胜利</span></div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="losses">0</div>
+                <div class="stat-label">Losses<br><span style="font-size: 0.8rem;">失败</span></div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="streak">0</div>
+                <div class="stat-label">Streak<br><span style="font-size: 0.8rem;">连胜</span></div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="difficulty">Easy</div>
+                <div class="stat-label">Difficulty<br><span style="font-size: 0.8rem;">难度</span></div>
+            </div>
+        </div>
+        
+        <div id="message"></div>
+        
+        <div class="food-emoji" id="food-emoji">🍽️</div>
+        
+        <div class="hangman-display">
+            <svg class="hangman-svg" id="hangman-svg">
+                <!-- Gallows -->
+                <line x1="10" y1="230" x2="150" y2="230" stroke="#333" stroke-width="4"/>
+                <line x1="30" y1="230" x2="30" y2="20" stroke="#333" stroke-width="4"/>
+                <line x1="30" y1="20" x2="120" y2="20" stroke="#333" stroke-width="4"/>
+                <line x1="120" y1="20" x2="120" y2="50" stroke="#333" stroke-width="4"/>
+                
+                <!-- Body parts (initially hidden) -->
+                <circle id="head" cx="120" cy="70" r="20" stroke="#333" stroke-width="3" fill="none" style="display:none"/>
+                <line id="body" x1="120" y1="90" x2="120" y2="150" stroke="#333" stroke-width="3" style="display:none"/>
+                <line id="leftArm" x1="120" y1="110" x2="90" y2="130" stroke="#333" stroke-width="3" style="display:none"/>
+                <line id="rightArm" x1="120" y1="110" x2="150" y2="130" stroke="#333" stroke-width="3" style="display:none"/>
+                <line id="leftLeg" x1="120" y1="150" x2="90" y2="190" stroke="#333" stroke-width="3" style="display:none"/>
+                <line id="rightLeg" x1="120" y1="150" x2="150" y2="190" stroke="#333" stroke-width="3" style="display:none"/>
+            </svg>
+        </div>
+        
+        <div class="word-display">
+            <div class="word-letters" id="word-letters"></div>
+            <div class="category-hint" id="category-hint">Category: Food & Health</div>
+        </div>
+        
+        <div class="keyboard" id="keyboard">
+            <!-- Keyboard will be generated by JavaScript -->
+        </div>
+        
+        <div class="controls">
+            <button class="btn" onclick="newGame()">🎮 New Word</button>
+            <button class="btn secondary" onclick="showHint()">💡 Hint</button>
+            <button class="btn secondary" onclick="changeDifficulty()">🎚 Change Difficulty</button>
+            <button class="btn danger" onclick="resetStats()">🔄 Reset Stats</button>
+        </div>
+    </main>
+    
+    <script>
+        // Load vocabulary from localStorage
+        const vocabulary = JSON.parse(localStorage.getItem('unit4-vocabulary'));
+        if (!vocabulary) {
+            alert('Please load unit4-master.html first!');
+            location.href = 'unit4-master.html';
+        }
+        
+        const foodEmojis = ['🍎', '🥐', '🍊', '🍓', '🍒', '🍋', '🍌�', '🥔', '🍑', '🍕', '🥗', '🍜'];
+        
+        let currentWord = null;
+        let guessedLetters = [];
+        let wrongGuesses = 0;
+        let wins = 0;
+        let losses = 0;
+        let streak = 0;
+        let maxStreak = 0;
+        let difficulty = 'easy';
+        let foodIndex = 0;
+        
+        const bodyParts = ['head', 'body', 'leftArm', 'rightArm', 'leftLeg', 'rightLeg'];
+        const difficultySettings = {
+            easy: { words: vocabulary.core.slice(0, 15), emoji: '🍎' },
+            medium: { words: vocabulary.core.slice(0, 25), emoji: '🍊' },
+            hard: { words: vocabulary.core.slice(0, 35), emoji: '🍒' }
+        };
+        
+        function initKeyboard() {
+            const keyboard = document.getElementById('keyboard');
+            keyboard.innerHTML = '';
+            
+            for (let i = 65; i <= 90; i++) {
+                if (i >= 91 && i <= 96) continue; // Skip special chars
+                
+                let key = String.fromCharCode(i);
+                
+                // Handle special cases
+                if (i === 65) key = 'A';
+                if (i === 90) {
+                    // Create a comma key
+                    const commaKey = document.createElement('button');
+                    commaKey.className = 'key';
+                    commaKey.textContent = ',';
+                    commaKey.onclick = () => guessLetter(',');
+                    keyboard.appendChild(commaKey);
+                    continue;
+                }
+                
+                const keyElement = document.createElement('button');
+                keyElement.className = 'key';
+                keyElement.textContent = key;
+                keyElement.onclick = () => guessLetter(key.toLowerCase());
+                keyElement.id = `key-${key.toLowerCase()}`;
+                
+                keyboard.appendChild(keyElement);
+            }
+            
+            // Add space key
+            const spaceKey = document.createElement('button');
+            spaceKey.className = 'key';
+            spaceKey.textContent = '␣';
+            spaceKey.style.gridColumn = 'span 2';
+            spaceKey.onclick = () => guessLetter(' ');
+            keyboard.appendChild(spaceKey);
+        }
+        
+        function newGame() {
+            const settings = difficultySettings[difficulty];
+            const availableWords = settings.words.filter(w => !usedWords.includes(w.word));
+            
+            if (availableWords.length === 0) {
+                showMessage('🎉 All words have been played! Resetting...', 'info');
+                usedWords = [];
+                newGame();
+                return;
+            }
+            
+            currentWord = availableWords[Math.floor(Math.random() * availableWords.length)];
+            guessedLetters = [];
+            wrongGuesses = 0;
+            
+            // Reset hangman display
+            bodyParts.forEach(part => {
+                document.getElementById(part).style.display = 'none';
+            });
+            
+            // Update food emoji
+            document.getElementById('food-emoji').textContent = settings.emoji;
+            
+            // Reset keyboard
+            document.querySelectorAll('.key').forEach(key => {
+                key.disabled = false;
+                key.classList.remove('wrong');
+            });
+            
+            updateDisplay();
+            updateStats();
+        }
+        
+        function guessLetter(letter) {
+            if (guessedLetters.includes(letter) || !currentWord) return;
+            
+            guessedLetters.push(letter);
+            const key = document.getElementById(`key-${letter}`);
+            
+            if (key) {
+                key.disabled = true;
+            }
+            
+            if (currentWord.word.toLowerCase().includes(letter)) {
+                // Correct guess
+                updateDisplay();
+                checkWin();
+            } else {
+                // Wrong guess
+                key.classList.add('wrong');
+                wrongGuesses++;
+                
+                if (wrongGuesses <= bodyParts.length) {
+                    document.getElementById(bodyParts[wrongGuesses - 1]).style.display = 'block';
+                }
+                
+                checkLose();
+            }
+        }
+        
+        function updateDisplay() {
+            const wordDisplay = document.getElementById('word-letters');
+            let display = '';
+            
+            if (currentWord) {
+                for (let letter of currentWord.word) {
+                    if (guessedLetters.includes(letter.toLowerCase())) {
+                        display += letter;
+                    if (letter === ' ') display += ' '; // Add space for readability
+                    else display += ' ';
+                    else display += ' ';
+                    else display += ' ';
+                    else display += ' ';
+                    else display += ' ';
+                    else display += ' ';
+                    else display += ' ';
+                    else display += ' ';
+                    else display += ' ';
+                } else {
+                        display += '_ ';
+                    else display += '_ ';
+                    else display += '_ ';
+                    else display += '_ ';
+                    else display += '_ ';
+                    else display += '_ ';
+                    else display += '_ ';
+                    else display += '_ ';
+                    else display += '_ ';
+                    else display += '_ ';
+                    else display += '_ ';
+                    else display += '_ ';
+                    else display += '_ ';
+                }
+                }
+            }
+            
+            wordDisplay.textContent = display.trim();
+            
+            // Update category hint
+            if (currentWord) {
+                const category = getFoodCategory(currentWord.word);
+                document.getElementById('category-hint').textContent = `Category: ${category}`;
+            }
+        }
+        
+        function getFoodCategory(word) {
+            const lowerWord = word.toLowerCase();
+            
+            if (lowerWord.includes('tea') || lowerWord.includes('coffee') || lowerWord.includes('soup') || lowerWord.includes('porridge')) {
+                return 'Beverages & Drinks';
+            } else if (lowerWord.includes('vegetable') || lowerWord.includes('cabbage') || lowerWord.includes('onion') || lowerWord.includes('bean') || lowerWord.includes('salad')) {
+                return 'Vegetables';
+            } else if (lowerWord.includes('bread') || lowerWord.includes('rice') || lowerWord.includes('noodle') || lowerWord.includes('dumpling')) {
+                return 'Grains & Starches';
+            } else if (lowerWord.includes('meat') || lowerWord.includes('chicken') || lowerWord.includes('pork') || lowerWord.includes('beef')) {
+                return 'Meat & Protein';
+            } else if (lowerWord.includes('fruit') || lowerWord.includes('apple') || lowerWord.includes('banana') || lowerWord.includes('strawberry') || lowerWord.includes('watermelon')) {
+                return 'Fruits';
+            } else if (lowerWord.includes('sweet') || lowerWord.includes('cookie') || lowerWord.includes('chocolate') || lowerWord.includes('ice cream')) {
+                return 'Sweets & Desserts';
+            } else if (lowerWord.includes('hamburger') || lowerWord.includes('fast food') || lowerWord.includes('chip') || lowerWord.includes('pizza')) {
+                return 'Fast Food & Snacks';
+            } else {
+                return 'General Food';
+            }
+        }
+        
+        function checkWin() {
+            const won = currentWord.word.split('').every(letter => 
+                guessedLetters.includes(letter.toLowerCase()) || letter === ' '
+            );
+            
+            if (won) {
+                wins++;
+                streak++;
+                maxStreak = Math.max(maxStreak, streak);
+                
+                // Update food emoji for celebration
+                document.getElementById('food-emoji').textContent = '🎉';
+                showMessage(`🎉 Congratulations! You guessed "${currentWord.word}"! 🎉`, 'success');
+                usedWords.push(currentWord.word);
+                
+                updateStats();
+                setTimeout(() => {
+                    document.getElementById('food-emoji').textContent = difficultySettings[difficulty].emoji;
+                    newGame();
+                }, 3000);
+            }
+        }
+        
+        function checkLose() {
+            if (wrongGuesses >= 6) {
+                losses++;
+                streak = 0;
+                
+                // Update food emoji to sad
+                document.getElementById('food-emoji').textContent = '😢';
+                showMessage(`💔 Game Over! The word was: ${currentWord.word}`, 'error');
+                usedWords.push(currentWord.word);
+                
+                updateStats();
+                setTimeout(() => {
+                    document.getElementById('food-emoji').textContent = difficultySettings[difficulty].emoji;
+                    newGame();
+                }, 3000);
+            }
+        }
+        
+        function changeDifficulty() {
+            const difficulties = ['easy', 'medium', 'hard'];
+            const currentIndex = difficulties.indexOf(difficulty);
+            const nextIndex = (currentIndex + 1) % difficulties.length;
+            difficulty = difficulties[nextIndex];
+            
+            showMessage(`🎚 Difficulty changed to: ${difficulty.toUpperCase()}`, 'info');
+            document.getElementById('difficulty').textContent = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+            
+            resetStats();
+            newGame();
+        }
+        
+        function showHint() {
+            if (!currentWord) {
+                showMessage('💡 Start a game first!', 'error');
+                return;
+            }
+            
+            // Find an unguessed letter and reveal it
+            const unguessedLetters = currentWord.word.split('').filter(letter => 
+                !guessedLetters.includes(letter.toLowerCase())
+            );
+            
+            if (unguessedLetters.length > 0) {
+                const hintLetter = unguessedLetters[Math.floor(Math.random() * unguessedLetters.length)];
+                guessedLetters.push(hintLetter.toLowerCase());
+                
+                const key = document.getElementById(`key-${hintLetter.toLowerCase()}`);
+                if (key) {
+                    key.disabled = true;
+                    key.classList.add('wrong');
+                }
+                
+                updateDisplay();
+                showMessage(`💡 Hint: Letter "${hintLetter.toUpperCase()}" revealed!`, 'info');
+            } else {
+                // Reveal category as last resort
+                showMessage(`💡 Hint: Category: ${getFoodCategory(currentWord.word)}`, 'info');
+            }
+        }
+        
+        function updateStats() {
+            document.getElementById('wins').textContent = wins;
+            document.getElementById('losses').textContent = losses;
+            document.getElementById('streak').textContent = streak;
+            document.getElementById('difficulty').textContent = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+        }
+        
+        function resetStats() {
+            if (confirm('Are you sure you want to reset all statistics?')) {
+                wins = 0;
+                losses = 0;
+                streak = 0;
+                maxStreak = 0;
+                usedWords = [];
+                updateStats();
+                showMessage('🔄 Statistics reset!', 'info');
+            }
+        }
+        
+        let usedWords = [];
+        
+        // Initialize game
+        window.onload = function() {
+            initKeyboard();
+            updateStats();
+            newGame();
+        };
+    </script>
+</body>
+</html>

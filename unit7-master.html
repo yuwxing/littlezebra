@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit 7 Master - Science & Technology</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Fredoka', cursive;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: white;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            background: linear-gradient(45deg, #00d2ff, #3a7bd5, #00d2ff);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 3s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .subtitle {
+            font-size: 1.5rem;
+            color: #64b5f6;
+            margin-bottom: 10px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            max-width: 400px;
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            margin: 20px auto;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #00d2ff, #3a7bd5, #00d2ff);
+            background-size: 200% 200%;
+            border-radius: 10px;
+            transition: width 2s ease;
+            animation: gradientShift 3s ease infinite;
+        }
+        
+        .vocabulary-preview {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 40px;
+            max-width: 800px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 1px solid rgba(100,181,246,0.3);
+        }
+        
+        .vocabulary-preview h3 {
+            color: #64b5f6;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+        
+        .vocabulary-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+        }
+        
+        .vocab-word {
+            background: rgba(255,255,255,0.15);
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(100,181,246,0.3);
+        }
+        
+        .vocab-word:hover {
+            background: rgba(100,181,246,0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            width: 100%;
+        }
+        
+        .game-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(100,181,246,0.1) 100%);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(100,181,246,0.3);
+            border-radius: 25px;
+            padding: 35px;
+            text-align: center;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(100,181,246,0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .game-card:hover::before {
+            left: 100%;
+        }
+        
+        .game-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            border-color: rgba(100,181,246,0.6);
+        }
+        
+        .game-icon {
+            font-size: 4.5rem;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+        }
+        
+        .game-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #fff;
+        }
+        
+        .game-subtitle {
+            font-size: 1.1rem;
+            color: #b3e5fc;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+        
+        .game-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #64b5f6;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #b3e5fc;
+        }
+        
+        .play-btn {
+            background: linear-gradient(45deg, #00d2ff, #3a7bd5);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,210,255,0.4);
+        }
+        
+        .play-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(0,210,255,0.6);
+        }
+        
+        .difficulty-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(100,181,246,0.2);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: 1px solid rgba(100,181,246,0.5);
+            color: #64b5f6;
+        }
+        
+        .audio-controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .audio-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(100,181,246,0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        
+        .audio-btn:hover {
+            background: rgba(100,181,246,0.3);
+        }
+        
+        .stars {
+            color: #64b5f6;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+        
+        .completion-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: linear-gradient(45deg, #4CAF50, #8BC34A);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            box-shadow: 0 2px 10px rgba(76,175,80,0.4);
+            z-index: 10;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-in {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .game-card {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🔬 Unit 7 Master</h1>
+        <p class="subtitle">Science & Technology - Innovation Vocabulary Adventures!</p>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+    </header>
+    
+    <section class="vocabulary-preview animate-in">
+        <h3>🧪 Today's Science & Technology Words</h3>
+        <div class="vocabulary-list" id="vocabList">
+            <!-- Words will be populated by JavaScript -->
+        </div>
+        <div class="audio-controls">
+            <button class="audio-btn" onclick="playAllWords()">🔊 Play All</button>
+            <button class="audio-btn" onclick="playRandomWord()">🎲 Random Word</button>
+        </div>
+    </section>
+    
+    <main class="games-grid">
+        <article class="game-card animate-in" style="animation-delay: 0.1s;" onclick="location.href='unit7-hangman.html'">
+            <div class="difficulty-badge">Classic</div>
+            <div class="game-icon">🎯</div>
+            <h2 class="game-title">Hangman</h2>
+            <p class="game-subtitle">Guess technology terms letter by letter</p>
+            <div class="stars">⭐⭐⭐⭐⭐</div>
+            <div class="game-stats">
+                <div class="stat">
+                    <div class="stat-value">49</div>
+                    <div class="stat-label">Words</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">∞</div>
+                    <div class="stat-label">Rounds</div>
+                </div>
+            </div>
+            <button class="play-btn">Play Now</button>
+        </article>
+        
+        <article class="game-card animate-in" style="animation-delay: 0.2s;" onclick="location.href='unit7-charades.html'">
+            <div class="difficulty-badge">Team Play</div>
+            <div class="game-icon">🎭</div>
+            <h2 class="game-title">Charades</h2>
+            <p class="game-subtitle">Act out science experiments and tech!</p>
+            <div class="stars">⭐⭐⭐⭐⭐</div>
+            <div class="game-stats">
+                <div class="stat">
+                    <div class="stat-value">60</div>
+                    <div class="stat-label">Seconds</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">2-4</div>
+                    <div class="stat-label">Teams</div>
+                </div>
+            </div>
+            <button class="play-btn">Play Now</button>
+        </article>
+        
+        <article class="game-card animate-in" style="animation-delay: 0.3s;" onclick="location.href='unit7-pictionary.html'">
+            <div class="difficulty-badge">Creative</div>
+            <div class="game-icon">🎨</div>
+            <h2 class="game-title">Pictionary</h2>
+            <p class="game-subtitle">Draw scientific concepts!</p>
+            <div class="stars">⭐⭐⭐⭐⭐</div>
+            <div class="game-stats">
+                <div class="stat">
+                    <div class="stat-value">90</div>
+                    <div class="stat-label">Seconds</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">∞</div>
+                    <div class="stat-label">Drawing</div>
+                </div>
+            </div>
+            <button class="play-btn">Play Now</button>
+        </article>
+        
+        <article class="game-card animate-in" style="animation-delay: 0.4s;" onclick="location.href='unit7-bingo.html'">
+            <div class="difficulty-badge">Listening</div>
+            <div class="game-icon">🎪</div>
+            <h2 class="game-title">Vocabulary Bingo</h2>
+            <p class="game-subtitle">Listen and mark tech terms!</p>
+            <div class="stars">⭐⭐⭐⭐⭐</div>
+            <div class="game-stats">
+                <div class="stat">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">Cards</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">🎵</div>
+                    <div class="stat-label">Audio</div>
+                </div>
+            </div>
+            <button class="play-btn">Play Now</button>
+            <div class="completion-badge">🎉 FINAL UNIT!</div>
+        </article>
+    </main>
+    
+    <script>
+        // Unit 7 Science & Technology Vocabulary
+        const unit7Vocabulary = [
+            // Basic Science
+            { english: "science", chinese: "科学", category: "General Science" },
+            { english: "technology", chinese: "技术", category: "Technology" },
+            { english: "experiment", chinese: "实验", category: "General Science" },
+            { english: "research", chinese: "研究", category: "General Science" },
+            { english: "discovery", chinese: "发现", category: "General Science" },
+            { english: "invention", chinese: "发明", category: "Technology" },
+            { english: "innovation", chinese: "创新", category: "Technology" },
+            { english: "laboratory", chinese: "实验室", category: "General Science" },
+            
+            // Physics
+            { english: "physics", chinese: "物理学", category: "Physics" },
+            { english: "energy", chinese: "能量", category: "Physics" },
+            { english: "electricity", chinese: "电", category: "Physics" },
+            { english: "magnet", chinese: "磁铁", category: "Physics" },
+            { english: "gravity", chinese: "重力", category: "Physics" },
+            { english: "force", chinese: "力", category: "Physics" },
+            { english: "motion", chinese: "运动", category: "Physics" },
+            { english: "wave", chinese: "波", category: "Physics" },
+            
+            // Chemistry
+            { english: "chemistry", chinese: "化学", category: "Chemistry" },
+            { english: "molecule", chinese: "分子", category: "Chemistry" },
+            { english: "atom", chinese: "原子", category: "Chemistry" },
+            { english: "chemical", chinese: "化学物质", category: "Chemistry" },
+            { english: "reaction", chinese: "反应", category: "Chemistry" },
+            { english: "solution", chinese: "溶液", category: "Chemistry" },
+            { english: "element", chinese: "元素", category: "Chemistry" },
+            { english: "compound", chinese: "化合物", category: "Chemistry" },
+            
+            // Biology
+            { english: "biology", chinese: "生物学", category: "Biology" },
+            { english: "cell", chinese: "细胞", category: "Biology" },
+            { english: "DNA", chinese: "DNA", category: "Biology" },
+            { english: "evolution", chinese: "进化", category: "Biology" },
+            { english: "organism", chinese: "生物", category: "Biology" },
+            { english: "ecosystem", chinese: "生态系统", category: "Biology" },
+            { english: "genetics", chinese: "遗传学", category: "Biology" },
+            { english: "species", chinese: "物种", category: "Biology" },
+            
+            // Technology & Computing
+            { english: "computer", chinese: "计算机", category: "Technology" },
+            { english: "software", chinese: "软件", category: "Technology" },
+            { english: "hardware", chinese: "硬件", category: "Technology" },
+            { english: "internet", chinese: "互联网", category: "Technology" },
+            { english: "digital", chinese: "数字的", category: "Technology" },
+            { english: "data", chinese: "数据", category: "Technology" },
+            { english: "algorithm", chinese: "算法", category: "Technology" },
+            { english: "programming", chinese: "编程", category: "Technology" },
+            
+            // Space & Astronomy
+            { english: "space", chinese: "太空", category: "Space Science" },
+            { english: "planet", chinese: "行星", category: "Space Science" },
+            { english: "star", chinese: "星星", category: "Space Science" },
+            { english: "galaxy", chinese: "星系", category: "Space Science" },
+            { english: "astronaut", chinese: "宇航员", category: "Space Science" },
+            { english: "telescope", chinese: "望远镜", category: "Space Science" },
+            { english: "satellite", chinese: "卫星", category: "Space Science" },
+            { english: "rocket", chinese: "火箭", category: "Space Science" },
+            
+            // General Terms
+            { english: "theory", chinese: "理论", category: "General Science" },
+            { english: "hypothesis", chinese: "假设", category: "General Science" },
+            { english: "evidence", chinese: "证据", category: "General Science" },
+            { english: "method", chinese: "方法", category: "General Science" },
+            { english: "result", chinese: "结果", category: "General Science" },
+            { english: "conclusion", chinese: "结论", category: "General Science" },
+            { english: "observation", chinese: "观察", category: "General Science" },
+            { english: "measurement", chinese: "测量", category: "General Science" },
+            { english: "analysis", chinese: "分析", category: "General Science" }
+        ];
+        
+        // Populate vocabulary list
+        function populateVocabulary() {
+            const vocabList = document.getElementById('vocabList');
+            const previewWords = unit7Vocabulary.slice(0, 20); // Show first 20 words
+            
+            previewWords.forEach((word, index) => {
+                const wordElement = document.createElement('div');
+                wordElement.className = 'vocab-word';
+                wordElement.textContent = `${word.english} (${word.chinese})`;
+                wordElement.onclick = () => speakWord(word.english);
+                wordElement.style.animationDelay = `${index * 0.05}s`;
+                wordElement.classList.add('animate-in');
+                vocabList.appendChild(wordElement);
+            });
+        }
+        
+        // Speech synthesis
+        function speakWord(word) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(word);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.8;
+                speechSynthesis.speak(utterance);
+            }
+        }
+        
+        function playAllWords() {
+            const previewWords = unit7Vocabulary.slice(0, 10);
+            let index = 0;
+            
+            function speakNext() {
+                if (index < previewWords.length) {
+                    speakWord(previewWords[index].english);
+                    index++;
+                    setTimeout(speakNext, 2000);
+                }
+            }
+            speakNext();
+        }
+        
+        function playRandomWord() {
+            const randomWord = unit7Vocabulary[Math.floor(Math.random() * unit7Vocabulary.length)];
+            speakWord(randomWord.english);
+            
+            // Highlight the word if it's in the preview
+            const words = document.querySelectorAll('.vocab-word');
+            words.forEach(wordElement => {
+                if (wordElement.textContent.includes(randomWord.english)) {
+                    wordElement.style.background = 'rgba(100,181,246,0.4)';
+                    setTimeout(() => {
+                        wordElement.style.background = 'rgba(255,255,255,0.15)';
+                    }, 2000);
+                }
+            });
+        }
+        
+        // Animate progress bar
+        function animateProgress() {
+            setTimeout(() => {
+                document.getElementById('progressBar').style.width = '100%'; // Unit 7 complete!
+            }, 500);
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            populateVocabulary();
+            animateProgress();
+            
+            // Add entrance animations
+            const cards = document.querySelectorAll('.game-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                }, index * 200);
+            });
+            
+            // Celebrate completion
+            setTimeout(() => {
+                showCelebration();
+            }, 2000);
+        });
+        
+        function showCelebration() {
+            const celebration = document.createElement('div');
+            celebration.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: linear-gradient(45deg, #00d2ff, #3a7bd5);
+                color: white;
+                padding: 30px 50px;
+                border-radius: 20px;
+                font-size: 2rem;
+                font-weight: 700;
+                text-align: center;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+                z-index: 1000;
+                animation: celebrationPop 0.6s ease;
+            `;
+            celebration.innerHTML = `
+                🎉 CONGRATULATIONS! 🎉<br>
+                <span style="font-size: 1.5rem;">All 7 Units Complete!</span>
+            `;
+            
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes celebrationPop {
+                    0% { transform: translate(-50%, -50%) scale(0); }
+                    50% { transform: translate(-50%, -50%) scale(1.1); }
+                    100% { transform: translate(-50%, -50%) scale(1); }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            document.body.appendChild(celebration);
+            
+            setTimeout(() => {
+                celebration.style.opacity = '0';
+                celebration.style.transition = 'opacity 0.5s ease';
+                setTimeout(() => {
+                    celebration.remove();
+                    style.remove();
+                }, 500);
+            }, 4000);
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            const cards = document.querySelectorAll('.game-card');
+            const currentIndex = Array.from(cards).findIndex(card => card.matches(':hover'));
+            
+            if (e.key === 'ArrowRight' && currentIndex < cards.length - 1) {
+                cards[currentIndex + 1].focus();
+            } else if (e.key === 'ArrowLeft' && currentIndex > 0) {
+                cards[currentIndex - 1].focus();
+            } else if (e.key === 'Enter' && currentIndex >= 0) {
+                cards[currentIndex].click();
+            }
+        });
+    </script>
+</body>
+</html>

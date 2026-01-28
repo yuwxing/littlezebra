@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Game - Unit 8 Once upon a Time</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Fredoka', cursive;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+        }
+        
+        .game-container {
+            background: rgba(255,255,255,0.9);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 1000px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        .game-modes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .game-mode {
+            background: linear-gradient(45deg, #ff9a9e, #fecfef);
+            color: #333;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+        }
+        
+        .game-mode:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255,154,158,0.4);
+            border-color: #ff6b6b;
+        }
+        
+        .mode-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .mode-description {
+            font-size: 1rem;
+            opacity: 0.9;
+            color: #333;
+        }
+        
+        .vocabulary-preview {
+            background: rgba(255,255,255,0.7);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .vocabulary-preview h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+        }
+        
+        .vocabulary-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+        }
+        
+        .vocab-word {
+            background: rgba(255,255,255,0.8);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 1rem;
+            color: #333;
+            border: 1px solid rgba(255,154,158,0.3);
+        }
+        
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.2);
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+        
+        .story-emoji {
+            font-size: 4rem;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="location.href='index.html'">← Back to Games</button>
+    
+    <header>
+        <h1>👑 Unit 8 Master</h1>
+        <p class="subtitle">Once upon a Time - Story Games</p>
+        <div class="story-emoji">🏰</div>
+    </header>
+    
+    <main class="game-container">
+        <div class="game-modes">
+            <div class="game-mode" onclick="location.href='unit8-hangman.html'">
+                <div class="mode-title">🎯 Hangman</div>
+                <div class="mode-description">Guess story words letter by letter</div>
+            </div>
+            
+            <div class="game-mode" onclick="location.href='unit8-charades.html'">
+                <div class="mode-title">🎭 Charades</div>
+                <div class="mode-description">Act out fairy tale scenes</div>
+            </div>
+            
+            <div class="game-mode" onclick="location.href='unit8-pictionary.html'">
+                <div class="mode-title">🎨 Pictionary</div>
+                <div class="mode-description">Draw magical characters</div>
+            </div>
+            
+            <div class="game-mode" onclick="location.href='unit8-wordsearch.html'">
+                <div class="mode-title">🔍 Word Search</div>
+                <div class="mode-description">Find hidden story words</div>
+            </div>
+        </div>
+        
+        <div class="vocabulary-preview">
+            <h3>Story Vocabulary Preview</h3>
+            <div class="vocabulary-list">
+                <div class="vocab-word">prince</div>
+                <div class="vocab-word">princess</div>
+                <div class="vocab-word">dragon</div>
+                <div class="vocab-word">castle</div>
+                <div class="vocab-word">magic</div>
+                <div class="vocab-word">kingdom</div>
+                <div class="vocab-word">forest</div>
+                <div class="vocab-word">adventure</div>
+                <div class="vocab-word">treasure</div>
+                <div class="vocab-word">spell</div>
+                <div class="vocab-word">hero</div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

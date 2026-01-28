@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category Sort Game - Unit 3 Vocabulary</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Fredoka', cursive;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .game-container {
+            background: white;
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            max-width: 1400px;
+            width: 100%;
+        }
+        
+        .game-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .game-info {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        .info-item {
+            background: #f8f9fa;
+            padding: 15px 25px;
+            border-radius: 15px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .info-label {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #4facfe;
+        }
+        
+        .control-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(79,172,254,0.4);
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(79,172,254,0.6);
+        }
+        
+        .btn.success {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            box-shadow: 0 4px 15px rgba(76,175,80,0.4);
+        }
+        
+        .btn.success:hover {
+            box-shadow: 0 6px 20px rgba(76,175,80,0.6);
+        }
+        
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: scale(1);
+        }
+        
+        .categories-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .category-box {
+            background: linear-gradient(135deg, #f3f5f7 0%, #e9ecef 100%);
+            border: 3px dashed #4facfe;
+            border-radius: 20px;
+            padding: 30px;
+            min-height: 200px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .category-box.correct {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            border: 3px solid #4CAF50;
+            animation: correctPulse 0.6s ease;
+        }
+        
+        .category-box.incorrect {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            border: 3px solid #f44336;
+            animation: incorrectShake 0.6s ease;
+        }
+        
+        @keyframes correctPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes incorrectShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        .category-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .category-icon {
+            font-size: 2rem;
+        }
+        
+        .word-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .word-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            cursor: grab;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+        
+        .word-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border-color: #4facfe;
+        }
+        
+        .word-card.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+            transform: scale(1.1);
+        }
+        
+        .word-card.placed {
+            background: #e8f5e8;
+            border-color: #4CAF50;
+        }
+        
+        .word-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .word-type {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .word-cards-container {
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .words-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .drop-zone {
+            background: rgba(255,255,255,0.5);
+            border: 2px dashed #4facfe;
+            border-radius: 15px;
+            padding: 20px;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .drop-zone.drag-over {
+            background: rgba(79,172,254,0.1);
+            border-color: #4facfe;
+            border-style: solid;
+            transform: scale(1.02);
+        }
+        
+        .drop-zone-text {
+            font-size: 1.2rem;
+            color: #4facfe;
+            font-weight: 600;
+            opacity: 0.7;
+        }
+        
+        .placed-words {
+            margin-top: 10px;
+        }
+        
+        .placed-word {
+            background: #4CAF50;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin: 5px;
+            display: inline-block;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            transition: width 0.5s ease;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .timer-section {
+            background: #fff3cd;
+            border: 2px solid #ffeaa7;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .timer-display {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        
+        .message {
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+        
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+        
+        .message.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 2px solid #bee5eb;
+        }
+        
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+        
+        .instructions {
+            background: #e8f0fe;
+            border: 2px solid #4facfe;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .instructions h3 {
+            color: #0c5460;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .instructions ul {
+            color: #0c5460;
+            font-size: 1rem;
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .stats-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #4facfe;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .round-display {
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .categories-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .game-controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .word-cards {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="location.href='unit3-master.html'">← Back to Unit 3</button>
+    
+    <header>
+        <h1>📂 Category Sort Game</h1>
+        <p>Sort words into correct categories!<br><span style="font-size: 1.2rem;">分类游戏</span></p>
+    </header>
+    
+    <main class="game-container">
+        <div class="stats-panel">
+            <div class="stat-item">
+                <div class="stat-value" id="round">1</div>
+                <div class="stat-label">Round<br><span style="font-size: 0.8rem;">回合</span></div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="correct">0</div>
+                <div class="stat-label">Correct<br><span style="font-size: 0.8rem;">正确</span></div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="total">0</div>
+                <div class="stat-label">Total<br><span style="font-size: 0.8rem;">总数</span></div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="score">0</div>
+                <div class="stat-label">Score<br><span style="font-size: 0.8rem;">分数</span></div>
+            </div>
+        </div>
+        
+        <div id="message"></div>
+        
+        <div class="game-controls">
+            <div class="game-info">
+                <div class="info-item">
+                    <div class="info-label">Round</div>
+                    <div class="info-value" id="round-display">1</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Score</div>
+                    <div class="info-value" id="score-display">0</div>
+                </div>
+                <div class="info-item round-display">
+                    Round 1 / 第1回
+                </div>
+            </div>
+            
+            <div class="control-buttons">
+                <button class="btn" onclick="startRound()">
+                    ▶️ Start<br><span style="font-size: 0.9rem;">开始</span>
+                </button>
+                <button class="btn" onclick="checkAnswers()">
+                    ✅ Check<br><span style="font-size: 0.9rem;">检查</span>
+                </button>
+                <button class="btn success" onclick="nextRound()">
+                    ⏭️ Next Round<br><span style="font-size: 0.9rem;">下一回</span>
+                </button>
+                <button class="btn" onclick="resetGame()">
+                    🔄 Reset<br><span style="font-size: 0.9rem;">重置</span>
+                </button>
+            </div>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill" style="width: 0%">
+                0% Complete
+            </div>
+        </div>
+        
+        <div class="categories-container" id="categories-container">
+            <!-- Categories will be generated here -->
+        </div>
+        
+        <div class="word-cards-container">
+            <div class="words-title">📋 Drag words to the correct category / 拖动单词到正确类别</div>
+            <div class="word-cards" id="word-cards">
+                <!-- Word cards will be generated here -->
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h3>📋 How to Play / 游戏规则</h3>
+            <ul>
+                <li>Drag words to the correct category / 拖动单词到正确类别</li>
+                <li>Each word belongs to exactly one category / 每个单词只属于一个类别</li>
+                <li>Check answers when you think you're done / 完成后检查答案</li>
+                <li>Try to get all correct in minimum rounds / 尽量少回合全部正确</li>
+                <li>Points for correct placement, penalties for mistakes / 正确放置得分，错误扣分</li>
+            </ul>
+        </div>
+    </main>
+    
+    <script>
+        // Load vocabulary from localStorage
+        const vocabulary = JSON.parse(localStorage.getItem('unit3-vocabulary'));
+        if (!vocabulary) {
+            alert('Please load unit3-master.html first!');
+            location.href = 'unit3-master.html';
+        }
+        
+        // Combine all vocabulary for the game
+        const allWords = [...vocabulary.core, ...vocabulary.elementary];
+        
+        // Define categories based on vocabulary types
+        const categories = [
+            {
+                name: 'Sports & Activities',
+                chinese: '运动与活动',
+                icon: '⚽️',
+                types: ['n.', 'phrase'],
+                words: []
+            },
+            {
+                name: 'Descriptive Words',
+                chinese: '描述词汇',
+                icon: '📝',
+                types: ['adj.', 'adv.'],
+                words: []
+            },
+            {
+                name: 'Action Verbs',
+                chinese: '动作动词',
+                icon: '🏃',
+                types: ['v.'],
+                words: []
+            },
+            {
+                name: 'Pronouns & Special',
+                chinese: '代词与特殊词',
+                icon: '👥',
+                types: ['pron.', 'interj.'],
+                words: []
+            }
+        ];
+        
+        // Categorize words
+        allWords.forEach(word => {
+            const type = word.type || 'adj.'; // Default to adjective if no type
+            let placed = false;
+            
+            for (const category of categories) {
+                if (category.types.includes(type) && !placed) {
+                    category.words.push(word);
+                    placed = true;
+                    break;
+                }
+            }
+        });
+        
+        // Game state
+        let currentRound = 1;
+        let score = 0;
+        let correct = 0;
+        let total = 0;
+        let gameActive = false;
+        let currentWords = [];
+        let placedWords = {};
+        
+        function initGame() {
+            renderCategories();
+            resetRound();
+        }
+        
+        function renderCategories() {
+            const container = document.getElementById('categories-container');
+            container.innerHTML = '';
+            
+            categories.forEach(category => {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'category-box';
+                categoryDiv.dataset.category = category.name;
+                
+                categoryDiv.innerHTML = `
+                    <div class="category-title">
+                        <span class="category-icon">${category.icon}</span>
+                        ${category.name}
+                        <br><small style="color: #666;">${category.chinese}</small>
+                    </div>
+                    <div class="drop-zone" data-category="${category.name}">
+                        <div class="drop-zone-text">Drop words here<br>在此放置单词</div>
+                        <div class="placed-words" id="placed-${category.name.replace(/\s+/g, '-')}"></div>
+                    </div>
+                `;
+                
+                container.appendChild(categoryDiv);
+            });
+            
+            // Add drop zone event listeners
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                zone.addEventListener('dragover', handleDragOver);
+                zone.addEventListener('drop', handleDrop);
+                zone.addEventListener('dragleave', handleDragLeave);
+            });
+        }
+        
+        function startRound() {
+            gameActive = true;
+            currentWords = [];
+            placedWords = {};
+            
+            // Select random words based on difficulty/round
+            const wordCount = Math.min(12, 8 + currentRound * 2); // Increase difficulty
+            const shuffled = [...allWords].sort(() => Math.random() - 0.5);
+            currentWords = shuffled.slice(0, wordCount);
+            
+            renderWordCards();
+            clearCategories();
+            
+            showMessage(`🎮 Round ${currentRound} started! Sort the words into categories.`, 'info');
+            
+            // Update UI
+            document.getElementById('round-display').textContent = currentRound;
+            document.getElementById('round').textContent = currentRound;
+        }
+        
+        function renderWordCards() {
+            const container = document.getElementById('word-cards');
+            container.innerHTML = '';
+            
+            currentWords.forEach((word, index) => {
+                const card = document.createElement('div');
+                card.className = 'word-card';
+                card.draggable = true;
+                card.dataset.word = word.word;
+                card.dataset.type = word.type;
+                
+                card.innerHTML = `
+                    <div class="word-text">${word.word}</div>
+                    <div class="word-type">${word.type}</div>
+                `;
+                
+                card.addEventListener('dragstart', handleDragStart);
+                card.addEventListener('dragend', handleDragEnd);
+                
+                container.appendChild(card);
+            });
+        }
+        
+        function clearCategories() {
+            document.querySelectorAll('.drop-zone').forEach(zone => {
+                const placedContainer = zone.querySelector('.placed-words');
+                placedContainer.innerHTML = '';
+                zone.parentElement.classList.remove('correct', 'incorrect');
+            });
+        }
+        
+        function handleDragStart(e) {
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', JSON.stringify({
+                word: e.target.dataset.word,
+                type: e.target.dataset.type
+            }));
+        }
+        
+        function handleDragEnd(e) {
+            e.target.classList.remove('dragging');
+        }
+        
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            e.currentTarget.classList.add('drag-over');
+        }
+        
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('drag-over');
+        }
+        
+        function handleDrop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drag-over');
+            
+            if (!gameActive) return;
+            
+            const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+            const category = e.currentTarget.dataset.category;
+            const categoryName = category.replace(/\s+/g, '-');
+            
+            // Remove from previous category if exists
+            Object.keys(placedWords).forEach(catName => {
+                placedWords[catName] = placedWords[catName].filter(w => w.word !== data.word);
+            });
+            
+            // Add to new category
+            if (!placedWords[categoryName]) {
+                placedWords[categoryName] = [];
+            }
+            placedWords[categoryName].push(data);
+            
+            // Update display
+            updateCategoryDisplay(categoryName);
+            updateProgress();
+        }
+        
+        function updateCategoryDisplay(categoryName) {
+            const container = document.getElementById(`placed-${categoryName}`);
+            container.innerHTML = '';
+            
+            if (placedWords[categoryName]) {
+                placedWords[categoryName].forEach(word => {
+                    const wordTag = document.createElement('span');
+                    wordTag.className = 'placed-word';
+                    wordTag.textContent = word.word;
+                    container.appendChild(wordTag);
+                });
+            }
+        }
+        
+        function updateProgress() {
+            const placedCount = Object.values(placedWords).flat().length;
+            const percentage = (placedCount / currentWords.length) * 100;
+            
+            const progressFill = document.getElementById('progress-fill');
+            progressFill.style.width = percentage + '%';
+            progressFill.textContent = Math.round(percentage) + '% Complete';
+        }
+        
+        function checkAnswers() {
+            if (!gameActive) return;
+            
+            gameActive = false;
+            correct = 0;
+            total = currentWords.length;
+            
+            let allCorrect = true;
+            
+            // Check each category
+            categories.forEach(category => {
+                const categoryName = category.name.replace(/\s+/g, '-');
+                const categoryWords = placedWords[categoryName] || [];
+                const categoryBox = document.querySelector(`[data-category="${category.name}"]`);
+                
+                // Check if all words in this category are correct
+                let categoryCorrect = true;
+                
+                categoryWords.forEach(wordData => {
+                    if (!category.types.includes(wordData.type)) {
+                        categoryCorrect = false;
+                        allCorrect = false;
+                    }
+                });
+                
+                // Check if any correct words are missing from this category
+                const missingWords = category.words.filter(word => 
+                    !categoryWords.find(w => w.word === word.word)
+                );
+                
+                if (missingWords.length > 0) {
+                    categoryCorrect = false;
+                    allCorrect = false;
+                }
+                
+                if (categoryCorrect) {
+                    categoryBox.classList.add('correct');
+                    categoryBox.classList.remove('incorrect');
+                    correct += categoryWords.length;
+                } else {
+                    categoryBox.classList.add('incorrect');
+                    categoryBox.classList.remove('correct');
+                }
+            });
+            
+            // Calculate score
+            if (allCorrect) {
+                score += 100 + (currentRound * 20); // Bonus for perfect round
+                showMessage(`🎉 Perfect! All categories correct! +${100 + (currentRound * 20)} points`, 'success');
+            } else {
+                score += Math.round(correct * 10); // Points for correct placements
+                showMessage(`✅ Checked! ${correct}/${total} words placed correctly.`, 'info');
+            }
+            
+            updateStats();
+        }
+        
+        function nextRound() {
+            if (!gameActive) {
+                currentRound++;
+                startRound();
+            }
+        }
+        
+        function resetGame() {
+            currentRound = 1;
+            score = 0;
+            correct = 0;
+            total = 0;
+            gameActive = false;
+            currentWords = [];
+            placedWords = {};
+            
+            clearCategories();
+            document.getElementById('word-cards').innerHTML = '';
+            document.getElementById('progress-fill').style.width = '0%';
+            document.getElementById('progress-fill').textContent = '0% Complete';
+            
+            updateStats();
+            showMessage('🔄 Game reset! Ready to start Round 1.', 'info');
+        }
+        
+        function updateStats() {
+            document.getElementById('correct').textContent = correct;
+            document.getElementById('total').textContent = total;
+            document.getElementById('score').textContent = score;
+            document.getElementById('score-display').textContent = score;
+        }
+        
+        function showMessage(text, type) {
+            const messageContainer = document.getElementById('message');
+            messageContainer.innerHTML = `<div class="message ${type}">${text}</div>`;
+            
+            setTimeout(() => {
+                messageContainer.innerHTML = '';
+            }, 3000);
+        }
+        
+        // Initialize game
+        window.onload = initGame;
+    </script>
+</body>
+</html>

@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit 5 Charades - Here and Now</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;600;700&family=Nunito:wght@400;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Comic Neue', 'Nunito', 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: white;
+            font-size: 32px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            background: linear-gradient(45deg, #FF6B6B, #FF8E53);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .game-container {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 1000px;
+            width: 100%;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .game-setup {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .team-setup {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .team {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 15px;
+            min-width: 200px;
+        }
+        
+        .team h3 {
+            color: #FFFFFF;
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .team-score {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+        
+        .team-members {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .member-input {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 10px;
+            padding: 10px;
+            color: white;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+        
+        .member-input::placeholder {
+            color: rgba(255,255,255,0.5);
+        }
+        
+        .game-area {
+            display: none;
+        }
+        
+        .game-area.active {
+            display: block;
+        }
+        
+        .current-team {
+            background: linear-gradient(45deg, #FF6B6B, #FF8E53);
+            padding: 15px 30px;
+            border-radius: 50px;
+            display: inline-block;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .timer-section {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .timer {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .timer-display {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #FFFFFF;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .timer.warning {
+            color: #ff6b6b;
+            animation: pulse 1s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .word-card {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 20px 0;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .word-content {
+            text-align: center;
+        }
+        
+        .word-text {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .word-chinese {
+            font-size: 1.5rem;
+            color: #FFFFFF;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+        
+        .word-category {
+            background: rgba(255,224,130,0.2);
+            border: 1px solid rgba(255,224,130,0.5);
+            padding: 8px 20px;
+            border-radius: 20px;
+            display: inline-block;
+            color: #FFE5E5;
+            font-weight: 600;
+        }
+        
+        .word-actions {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+        
+        .action-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        
+        .game-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #FF6B6B, #FF8E53);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255,107,107,0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        
+        .btn-success {
+            background: linear-gradient(45deg, #4CAF50, #8BC34A);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .round-result {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            display: none;
+            text-align: center;
+        }
+        
+        .round-result.show {
+            display: block;
+        }
+        
+        .result-message {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .result-word {
+            font-size: 1.2rem;
+            color: #FFFFFF;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+        
+        .game-over {
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            display: none;
+        }
+        
+        .game-over.show {
+            display: block;
+        }
+        
+        .winner-announcement {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #FFFFFF;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .final-scores {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .final-score {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 15px;
+            min-width: 150px;
+        }
+        
+        .final-score.winner {
+            background: linear-gradient(45deg, #4CAF50, #8BC34A);
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .team-setup {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .timer {
+                font-size: 3rem;
+            }
+            
+            .word-text {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🎭 Unit 5 Charades</h1>
+        <p style="color: #FFFFFF; font-size: 1.2rem; text-shadow: 1px 1px 3px rgba(0,0,0,0.5);">Here and Now - Present Time Acting Game</p>
+    </header>
+    
+    <main class="game-container">
+        <section class="game-setup" id="setupSection">
+            <div class="team-setup">
+                <div class="team">
+                    <h3>🔴 Team A</h3>
+                    <div class="team-score" id="teamAScore">0</div>
+                    <div class="team-members">
+                        <input type="text" class="member-input" id="teamA1" placeholder="Player 1 name">
+                        <input type="text" class="member-input" id="teamA2" placeholder="Player 2 name">
+                        <input type="text" class="member-input" id="teamA3" placeholder="Player 3 name">
+                        <input type="text" class="member-input" id="teamA4" placeholder="Player 4 name">
+                    </div>
+                </div>
+                
+                <div class="team">
+                    <h3>🔵 Team B</h3>
+                    <div class="team-score" id="teamBScore">0</div>
+                    <div class="team-members">
+                        <input type="text" class="member-input" id="teamB1" placeholder="Player 1 name">
+                        <input type="text" class="member-input" id="teamB2" placeholder="Player 2 name">
+                        <input type="text" class="member-input" id="teamB3" placeholder="Player 3 name">
+                        <input type="text" class="member-input" id="teamB4" placeholder="Player 4 name">
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" onclick="startGame()">🎮 Start Game</button>
+        </section>
+        
+        <section class="game-area" id="gameArea">
+            <div class="current-team" id="currentTeamDisplay">🔴 Team A's Turn</div>
+            
+            <div class="timer-section">
+                <div class="timer" id="timer">60</div>
+                <div>Seconds Remaining</div>
+            </div>
+            
+            <div class="word-card">
+                <div class="word-content" id="wordContent">
+                    <div class="word-text" id="wordText">Click "Get New Word" to Start</div>
+                    <div class="word-chinese" id="wordChinese"></div>
+                    <div class="word-category" id="wordCategory"></div>
+                </div>
+                <div class="word-actions">
+                    <button class="action-btn" onclick="speakWord()">🔊</button>
+                    <button class="action-btn" onclick="getHint()">💡</button>
+                </div>
+            </div>
+            
+            <div class="game-controls">
+                <button class="btn btn-primary" id="newWordBtn" onclick="getNewWord()">🎲 New Word</button>
+                <button class="btn btn-success" id="startTimerBtn" onclick="startTimer()">⏱️ Start Timer</button>
+                <button class="btn btn-danger" onclick="skipWord()">⏭️ Skip Word</button>
+                <button class="btn btn-secondary" onclick="nextTurn()">🔄 Next Turn</button>
+            </div>
+            
+            <div class="round-result" id="roundResult">
+                <div class="result-message" id="resultMessage"></div>
+                <div class="result-word" id="resultWord"></div>
+                <button class="btn btn-primary" onclick="nextTurn()">Next Turn</button>
+            </div>
+        </section>
+        
+        <section class="game-over" id="gameOverSection">
+            <div class="winner-announcement" id="winnerAnnouncement">🎉 Team A Wins!</div>
+            <div class="final-scores">
+                <div class="final-score">
+                    <h3>🔴 Team A</h3>
+                    <div style="font-size: 2rem; font-weight: 700;" id="finalScoreA">0</div>
+                </div>
+                <div class="final-score">
+                    <h3>🔵 Team B</h3>
+                    <div style="font-size: 2rem; font-weight: 700;" id="finalScoreB">0</div>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="resetGame()">🔄 New Game</button>
+        </section>
+    </main>
+    
+    <script>
+        // Unit 5 Here and Now Vocabulary (Present Time)
+        const unit5Vocabulary = [
+            // Present Tense Verbs
+            { english: "doing", chinese: "正在做", category: "Present Actions", hint: "Action in progress" },
+            { english: "making", chinese: "正在制作", category: "Present Actions", hint: "Creating something now" },
+            { english: "taking", chinese: "正在拿", category: "Present Actions", hint: "Currently holding" },
+            { english: "putting", chinese: "正在放", category: "Present Actions", hint: "Placing somewhere" },
+            { english: "having", chinese: "正在拥有", category: "Present Actions", hint: "Currently possessing" },
+            { english: "saying", chinese: "正在说", category: "Present Actions", hint: "Currently speaking" },
+            { english: "thinking", chinese: "正在想", category: "Present Actions", hint: "Currently considering" },
+            { english: "going", chinese: "正在去", category: "Present Actions", hint: "Currently traveling" },
+            { english: "coming", chinese: "正在来", category: "Present Actions", hint: "Currently arriving" },
+            { english: "seeing", chinese: "正在看", category: "Present Actions", hint: "Currently watching" },
+            { english: "feeling", chinese: "正在感觉", category: "Present Actions", hint: "Currently experiencing" },
+            
+            // Present Continuous Time Expressions
+            { english: "now", chinese: "现在", category: "Time Expressions", hint: "At this moment" },
+            { english: "today", chinese: "今天", category: "Time Expressions", hint: "This current day" },
+            { english: "currently", chinese: "目前", category: "Time Expressions", hint: "At present time" },
+            { english: "presently", chinese: "目前", category: "Time Expressions", hint: "Right now" },
+            { english: "at the moment", chinese: "此刻", category: "Time Expressions", hint: "Exactly now" },
+            { english: "right now", chinese: "就现在", category: "Time Expressions", hint: "Immediately" },
+            { english: "these days", chinese: "这些天", category: "Time Expressions", hint: "Recent period" },
+            { english: "nowadays", chinese: "如今", category: "Time Expressions", hint: "In current times" },
+            
+            // Current Activities
+            { english: "working", chinese: "正在工作", category: "Current Activities", hint: "Currently employed" },
+            { english: "studying", chinese: "正在学习", category: "Current Activities", hint: "Currently learning" },
+            { english: "playing", chinese: "正在玩", category: "Current Activities", hint: "Currently enjoying games" },
+            { english: "reading", chinese: "正在读", category: "Current Activities", hint: "Currently looking at text" },
+            { english: "writing", chinese: "正在写", category: "Current Activities", hint: "Currently creating text" },
+            { english: "cooking", chinese: "正在做饭", category: "Current Activities", hint: "Currently preparing food" },
+            { english: "sleeping", chinese: "正在睡觉", category: "Current Activities", hint: "Currently resting" },
+            { english: "shopping", chinese: "正在购物", category: "Current Activities", hint: "Currently buying things" },
+            { english: "exercising", chinese: "正在锻炼", category: "Current Activities", hint: "Currently doing sports" },
+            
+            // Present Situations
+            { english: "meeting", chinese: "正在见面", category: "Present Situations", hint: "Currently gathering" },
+            { english: "talking", chinese: "正在谈话", category: "Present Situations", hint: "Currently conversing" },
+            { english: "waiting", chinese: "正在等待", category: "Present Situations", hint: "Currently staying" },
+            { english: "helping", chinese: "正在帮助", category: "Present Situations", hint: "Currently assisting" },
+            { english: "learning", chinese: "正在学习", category: "Present Situations", hint: "Currently gaining knowledge" },
+            { english: "teaching", chinese: "正在教", category: "Present Situations", hint: "Currently instructing" },
+            { english: "watching", chinese: "正在观看", category: "Present Situations", hint: "Currently observing" },
+            { english: "listening", chinese: "正在听", category: "Present Situations", hint: "Currently hearing" },
+            
+            // Present States & Conditions
+            { english: "busy", chinese: "忙碌的", category: "Present States", hint: "Currently occupied" },
+            { english: "free", chinese: "空闲的", category: "Present States", hint: "Currently available" },
+            { english: "happy", chinese: "快乐的", category: "Present States", hint: "Currently joyful" },
+            { english: "sad", chinese: "伤心的", category: "Present States", hint: "Currently unhappy" },
+            { english: "tired", chinese: "累的", category: "Present States", hint: "Currently exhausted" },
+            { english: "excited", chinese: "兴奋的", category: "Present States", hint: "Currently thrilled" },
+            { english: "worried", chinese: "担心的", category: "Present States", hint: "Currently concerned" },
+            { english: "relaxed", chinese: "放松的", category: "Present States", hint: "Currently calm" },
+            { english: "focused", chinese: "专注的", category: "Present States", hint: "Currently concentrating" },
+            
+            // Present Location & Environment
+            { english: "here", chinese: "这里", category: "Location", hint: "In this place" },
+            { english: "there", chinese: "那里", category: "Location", hint: "In that place" },
+            { english: "everywhere", chinese: "到处", category: "Location", hint: "In all places" },
+            { english: "somewhere", chinese: "某处", category: "Location", hint: "In an unknown place" },
+            { english: "nowhere", chinese: "无处", category: "Location", hint: "In no place" },
+            { english: "inside", chinese: "在里面", category: "Location", hint: "Within something" },
+            { english: "outside", chinese: "在外面", category: "Location", hint: "Not within something" }
+        ];
+        
+        let currentWord = null;
+        let currentTeam = 'A';
+        let teamAScore = 0;
+        let teamBScore = 0;
+        let timerInterval = null;
+        let timeRemaining = 60;
+        let gameActive = false;
+        let usedWords = [];
+        
+        function startGame() {
+            // Validate team setup
+            const teamAPlayers = getTeamPlayers('A');
+            const teamBPlayers = getTeamPlayers('B');
+            
+            if (teamAPlayers.length === 0 || teamBPlayers.length === 0) {
+                alert('Please enter at least one player name for each team!');
+                return;
+            }
+            
+            // Reset game state
+            currentTeam = 'A';
+            teamAScore = 0;
+            teamBScore = 0;
+            usedWords = [];
+            gameActive = true;
+            
+            // Update UI
+            document.getElementById('setupSection').style.display = 'none';
+            document.getElementById('gameArea').classList.add('active');
+            document.getElementById('gameOverSection').classList.remove('show');
+            
+            updateScores();
+            updateTeamDisplay();
+        }
+        
+        function getTeamPlayers(team) {
+            const players = [];
+            for (let i = 1; i <= 4; i++) {
+                const input = document.getElementById(`team${team}${i}`);
+                if (input && input.value.trim()) {
+                    players.push(input.value.trim());
+                }
+            }
+            return players;
+        }
+        
+        function getNewWord() {
+            const availableWords = unit5Vocabulary.filter(word => 
+                !usedWords.find(used => used.english === word.english)
+            );
+            
+            if (availableWords.length === 0) {
+                // Reset used words if all have been used
+                usedWords = [];
+                return getNewWord();
+            }
+            
+            currentWord = availableWords[Math.floor(Math.random() * availableWords.length)];
+            
+            document.getElementById('wordText').textContent = currentWord.english;
+            document.getElementById('wordChinese').textContent = currentWord.chinese;
+            document.getElementById('wordCategory').textContent = currentWord.category;
+        }
+        
+        function startTimer() {
+            if (!currentWord) {
+                alert('Please get a word first!');
+                return;
+            }
+            
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            
+            timeRemaining = 60;
+            updateTimerDisplay();
+            
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                updateTimerDisplay();
+                
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    timeUp();
+                }
+            }, 1000);
+        }
+        
+        function updateTimerDisplay() {
+            const timerElement = document.getElementById('timer');
+            timerElement.textContent = timeRemaining;
+            
+            if (timeRemaining <= 10) {
+                timerElement.classList.add('warning');
+            } else {
+                timerElement.classList.remove('warning');
+            }
+        }
+        
+        function timeUp() {
+            showRoundResult(false, "Time's up!");
+        }
+        
+        function skipWord() {
+            if (!currentWord) {
+                alert('Please get a word first!');
+                return;
+            }
+            
+            usedWords.push({ ...currentWord, status: 'skipped' });
+            showRoundResult(false, "Word skipped");
+        }
+        
+        function correctGuess() {
+            if (!currentWord) return;
+            
+            usedWords.push({ ...currentWord, status: 'acted' });
+            
+            // Add points to current team
+            if (currentTeam === 'A') {
+                teamAScore++;
+            } else {
+                teamBScore++;
+            }
+            
+            updateScores();
+            showRoundResult(true, "Correct! Well done!");
+            
+            // Stop timer if running
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
+        
+        function showRoundResult(success, message) {
+            const resultSection = document.getElementById('roundResult');
+            const resultMessage = document.getElementById('resultMessage');
+            const resultWord = document.getElementById('resultWord');
+            
+            if (success) {
+                resultMessage.textContent = message;
+                resultMessage.style.color = '#4CAF50';
+            } else {
+                resultMessage.textContent = message;
+                resultMessage.style.color = '#ff6b6b';
+            }
+            
+            resultWord.textContent = `The word was: ${currentWord.english} (${currentWord.chinese})`;
+            
+            resultSection.classList.add('show');
+        }
+        
+        function nextTurn() {
+            // Hide result
+            document.getElementById('roundResult').classList.remove('show');
+            
+            // Clear word display
+            document.getElementById('wordText').textContent = 'Click "Get New Word" to Start';
+            document.getElementById('wordChinese').textContent = '';
+            document.getElementById('wordCategory').textContent = '';
+            currentWord = null;
+            
+            // Check for winner (first to 10 points)
+            if (teamAScore >= 10 || teamBScore >= 10) {
+                endGame();
+                return;
+            }
+            
+            // Switch teams
+            currentTeam = currentTeam === 'A' ? 'B' : 'A';
+            updateTeamDisplay();
+            updateScores();
+            
+            // Reset timer
+            timeRemaining = 60;
+            updateTimerDisplay();
+        }
+        
+        function updateTeamDisplay() {
+            const display = document.getElementById('currentTeamDisplay');
+            if (currentTeam === 'A') {
+                display.textContent = '🔴 Team A\'s Turn';
+            } else {
+                display.textContent = '🔵 Team B\'s Turn';
+            }
+        }
+        
+        function updateScores() {
+            document.getElementById('teamAScore').textContent = teamAScore;
+            document.getElementById('teamBScore').textContent = teamBScore;
+        }
+        
+        function endGame() {
+            gameActive = false;
+            
+            document.getElementById('gameArea').classList.remove('active');
+            document.getElementById('gameOverSection').classList.add('show');
+            
+            const winner = teamAScore > teamBScore ? 'A' : 'B';
+            const winnerAnnouncement = document.getElementById('winnerAnnouncement');
+            
+            if (winner === 'A') {
+                winnerAnnouncement.textContent = '🎉 Team A Wins!';
+            } else {
+                winnerAnnouncement.textContent = '🎉 Team B Wins!';
+            }
+            
+            document.getElementById('finalScoreA').textContent = teamAScore;
+            document.getElementById('finalScoreB').textContent = teamBScore;
+            
+            // Add winner styling
+            setTimeout(() => {
+                const finalScores = document.querySelectorAll('.final-score');
+                finalScores.forEach(score => {
+                    score.classList.remove('winner');
+                });
+                if (winner === 'A') {
+                    finalScores[0].classList.add('winner');
+                } else {
+                    finalScores[1].classList.add('winner');
+                }
+            }, 100);
+        }
+        
+        function resetGame() {
+            // Reset all variables
+            currentTeam = 'A';
+            teamAScore = 0;
+            teamBScore = 0;
+            usedWords = [];
+            currentWord = null;
+            gameActive = false;
+            
+            // Clear player names
+            document.querySelectorAll('.member-input').forEach(input => {
+                input.value = '';
+            });
+            
+            // Show setup section
+            document.getElementById('gameOverSection').classList.remove('show');
+            document.getElementById('gameArea').classList.remove('active');
+            document.getElementById('setupSection').style.display = 'block';
+            
+            updateScores();
+        }
+        
+        function speakWord() {
+            if (currentWord && 'speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(currentWord.english);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.8;
+                speechSynthesis.speak(utterance);
+            }
+        }
+        
+        function getHint() {
+            if (currentWord) {
+                alert(`Hint: ${currentWord.hint}`);
+            }
+        }
+        
+        // Initialize game when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            updateScores();
+        });
+    </script>
+</body>
+</html>

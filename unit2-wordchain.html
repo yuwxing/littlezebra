@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Chain Game - Unit 2 Vocabulary</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Fredoka', cursive;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .game-container {
+            background: white;
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            max-width: 1200px;
+            width: 100%;
+        }
+        
+        .score-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .player-score {
+            background: #f8f9fa;
+            border: 3px solid #e0e0e0;
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .player-score.active {
+            border-color: #ff6b6b;
+            background: #ffebee;
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(255,107,107,0.3);
+        }
+        
+        .player-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .player-points {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #ff6b6b;
+            margin-bottom: 10px;
+        }
+        
+        .player-words {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.4;
+        }
+        
+        .word-chain-display {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(102,126,234,0.4);
+        }
+        
+        .chain-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .chain-words {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+            min-height: 80px;
+        }
+        
+        .chain-word {
+            background: rgba(255,255,255,0.2);
+            padding: 10px 15px;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            position: relative;
+        }
+        
+        .chain-word:not(:last-child)::after {
+            content: '→';
+            position: absolute;
+            right: -25px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.8);
+        }
+        
+        .current-word-section {
+            background: #f8f9fa;
+            border: 3px solid #e0e0e0;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .current-word-label {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .current-word-display {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 15px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .last-letter-hint {
+            font-size: 1.5rem;
+            color: #ff6b6b;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .word-input-section {
+            background: white;
+            border: 3px solid #e0e0e0;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .word-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            font-size: 1.5rem;
+            font-family: 'Fredoka', cursive;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .word-input:focus {
+            outline: none;
+            border-color: #764ba2;
+            box-shadow: 0 0 15px rgba(102,126,234,0.3);
+        }
+        
+        .word-input.error {
+            border-color: #f44336;
+            animation: shake 0.6s ease;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        .suggested-words {
+            background: #e3f2fd;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .suggested-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1976d2;
+            margin-bottom: 15px;
+        }
+        
+        .suggested-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .suggested-word {
+            background: white;
+            border: 2px solid #bbdefb;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 1rem;
+            color: #1976d2;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .suggested-word:hover {
+            background: #bbdefb;
+            transform: scale(1.05);
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(102,126,234,0.6);
+        }
+        
+        .btn.success {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+        }
+        
+        .btn.warning {
+            background: linear-gradient(45deg, #ff9800, #f57c00);
+        }
+        
+        .btn.danger {
+            background: linear-gradient(45deg, #f44336, #da190b);
+        }
+        
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: scale(1);
+        }
+        
+        .game-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .message {
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+        
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+        
+        .message.warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 2px solid #ffeaa7;
+        }
+        
+        .message.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 2px solid #bee5eb;
+        }
+        
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+        
+        .timer-section {
+            background: #fff3e0;
+            border: 3px solid #ff9800;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .timer-display {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #e65100;
+            margin-bottom: 10px;
+        }
+        
+        .timer-bar {
+            width: 100%;
+            height: 10px;
+            background: #ffccbc;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .timer-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #ff9800, #e65100);
+            transition: width 1s linear;
+            border-radius: 5px;
+        }
+        
+        .difficulty-selector {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .difficulty-btn {
+            background: #e0e0e0;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .difficulty-btn.active {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        .instructions {
+            background: #e8f5e8;
+            border: 2px solid #4CAF50;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .instructions h3 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .instructions ul {
+            color: #2e7d32;
+            font-size: 1rem;
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .player-selector {
+            background: #f3e5f5;
+            border: 3px solid #9c27b0;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .player-count-label {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #7b1fa2;
+            margin-bottom: 15px;
+        }
+        
+        .player-count-selector {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .player-count-btn {
+            background: white;
+            border: 2px solid #ce93d8;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #7b1fa2;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .player-count-btn.active {
+            background: #9c27b0;
+            color: white;
+            border-color: #9c27b0;
+        }
+        
+        .player-count-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .chain-words {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .chain-word:not(:last-child)::after {
+                content: '↓';
+                right: 50%;
+                top: auto;
+                bottom: -25px;
+                transform: translateX(50%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="location.href='unit2-master.html'">← Back to Unit 2</button>
+    
+    <header>
+        <h1>🔗 Word Chain Game</h1>
+        <p>Connect words using the last letter!<br><span style="font-size: 1.2rem;">单词接龙游戏</span></p>
+    </header>
+    
+    <main class="game-container">
+        <div class="game-stats">
+            <div class="stat-item">
+                <div class="stat-value" id="chain-length">0</div>
+                <div class="stat-label">Chain Length<br><span style="font-size: 0.8rem;">链长</span></div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="current-round">1</div>
+                <div class="stat-label">Round<br><span style="font-size: 0.8rem;">回合</span></div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="words-used">0</div>
+                <div class="stat-label">Words Used<br><span style="font-size: 0.8rem;">用词数</span></div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="time-played">0:00</div>
+                <div class="stat-label">Time Played<br><span style="font-size: 0.8rem;">游戏时间</span></div>
+            </div>
+        </div>
+        
+        <div id="message"></div>
+        
+        <div class="player-selector">
+            <div class="player-count-label">👥 Number of Players / 玩家数量</div>
+            <div class="player-count-selector">
+                <button class="player-count-btn active" onclick="setPlayerCount(2)">2</button>
+                <button class="player-count-btn" onclick="setPlayerCount(3)">3</button>
+                <button class="player-count-btn" onclick="setPlayerCount(4)">4</button>
+                <button class="player-count-btn" onclick="setPlayerCount(6)">6</button>
+                <button class="player-count-btn" onclick="setPlayerCount(8)">8</button>
+            </div>
+        </div>
+        
+        <div class="difficulty-selector">
+            <button class="difficulty-btn active" onclick="setDifficulty('easy')">Easy / 简单</button>
+            <button class="difficulty-btn" onclick="setDifficulty('medium')">Medium / 中等</button>
+            <button class="difficulty-btn" onclick="setDifficulty('hard')">Hard / 困难</button>
+        </div>
+        
+        <div class="score-panel" id="score-panel">
+            <!-- Player scores will be generated here -->
+        </div>
+        
+        <div class="word-chain-display">
+            <div class="chain-title">🔗 Word Chain / 单词链</div>
+            <div class="chain-words" id="chain-words">
+                <div class="chain-word">Click "Start Game" to begin!</div>
+            </div>
+        </div>
+        
+        <div class="current-word-section">
+            <div class="current-word-label">📝 Current Word / 当前单词</div>
+            <div class="current-word-display" id="current-word-display">
+                Ready to start!
+            </div>
+            <div class="last-letter-hint" id="last-letter-hint">
+                Start with any word!
+            </div>
+        </div>
+        
+        <div class="timer-section">
+            <div class="timer-display" id="timer">⏱️ Ready</div>
+            <div class="timer-bar">
+                <div class="timer-fill" id="timer-fill" style="width: 100%"></div>
+            </div>
+        </div>
+        
+        <div class="word-input-section">
+            <input type="text" class="word-input" id="word-input" 
+                   placeholder="Enter a word that starts with..." 
+                   placeholder="输入以...开头的单词"
+                   onkeypress="handleKeyPress(event)">
+            
+            <div class="suggested-words" id="suggested-words" style="display: none;">
+                <div class="suggested-title">💡 Suggested Words / 建议单词</div>
+                <div class="suggested-list" id="suggested-list">
+                    <!-- Suggestions will be added here -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn" id="start-btn" onclick="startGame()">
+                ▶️ Start Game<br><span style="font-size: 0.9rem;">开始游戏</span>
+            </button>
+            <button class="btn success" id="submit-btn" onclick="submitWord()" disabled>
+                ✅ Submit Word<br><span style="font-size: 0.9rem;">提交单词</span>
+            </button>
+            <button class="btn warning" onclick="skipTurn()">
+                ⏭️ Skip Turn<br><span style="font-size: 0.9rem;">跳过回合</span>
+            </button>
+            <button class="btn danger" onclick="resetGame()">
+                🔄 Reset Game<br><span style="font-size: 0.9rem;">重置游戏</span>
+            </button>
+        </div>
+        
+        <div class="instructions">
+            <h3>📋 Game Rules / 游戏规则</h3>
+            <ul>
+                <li>Each word must start with the last letter of the previous word<br>每个单词必须以前一个单词的最后一个字母开头</li>
+                <li>Use only Unit 2 vocabulary words<br>只能使用Unit 2词汇表中的单词</li>
+                <li>No repeating words in the same game<br>同一游戏中不能重复单词</li>
+                <li>30 seconds per turn<br>每回合30秒</li>
+                <li>10 points for each correct word<br>每个正确单词得10分</li>
+                <li>-5 points for wrong word or timeout<br>错误单词或超时扣5分</li>
+            </ul>
+        </div>
+    </main>
+    
+    <script>
+        // Load vocabulary from localStorage
+        const vocabulary = JSON.parse(localStorage.getItem('unit2-vocabulary'));
+        if (!vocabulary) {
+            alert('Please load unit2-master.html first!');
+            location.href = 'unit2-master.html';
+        }
+        
+        // Combine all vocabulary for the game
+        const allWords = [...vocabulary.core, ...vocabulary.names];
+        
+        // Game state
+        let playerCount = 2;
+        let currentDifficulty = 'easy';
+        let players = [];
+        let currentPlayerIndex = 0;
+        let wordChain = [];
+        let usedWords = [];
+        let currentRound = 1;
+        let timeLeft = 30;
+        let timerInterval = null;
+        let gameTimer = null;
+        let gameActive = false;
+        let gameStartTime = null;
+        
+        function setPlayerCount(count) {
+            playerCount = count;
+            
+            // Update button states
+            document.querySelectorAll('.player-count-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            initializePlayers();
+        }
+        
+        function setDifficulty(difficulty) {
+            currentDifficulty = difficulty;
+            
+            // Update button states
+            document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+        
+        function initializePlayers() {
+            players = [];
+            
+            for (let i = 1; i <= playerCount; i++) {
+                players.push({
+                    name: `Player ${i}`,
+                    score: 0,
+                    words: []
+                });
+            }
+            
+            currentPlayerIndex = 0;
+            renderPlayers();
+        }
+        
+        function renderPlayers() {
+            const container = document.getElementById('score-panel');
+            container.innerHTML = '';
+            
+            players.forEach((player, index) => {
+                const playerDiv = document.createElement('div');
+                playerDiv.className = 'player-score' + (index === currentPlayerIndex ? ' active' : '');
+                playerDiv.innerHTML = `
+                    <div class="player-name">${player.name}<br><span style="font-size: 0.8rem;">玩家${index + 1}</span></div>
+                    <div class="player-points">${player.score}</div>
+                    <div class="player-words">Words: ${player.words.length}<br><span style="font-size: 0.8rem;">用词：${player.words.length}个</span></div>
+                `;
+                container.appendChild(playerDiv);
+            });
+        }
+        
+        function startGame() {
+            if (gameActive) return;
+            
+            gameActive = true;
+            gameStartTime = Date.now();
+            wordChain = [];
+            usedWords = [];
+            currentPlayerIndex = 0;
+            timeLeft = 30;
+            
+            // Reset players
+            players.forEach(p => {
+                p.score = 0;
+                p.words = [];
+            });
+            
+            // Update displays
+            updateChainDisplay();
+            updateCurrentWordDisplay();
+            renderPlayers();
+            updateStats();
+            
+            // Enable/disable buttons
+            document.getElementById('start-btn').disabled = true;
+            document.getElementById('submit-btn').disabled = false;
+            document.getElementById('word-input').disabled = false;
+            document.getElementById('word-input').focus();
+            
+            // Start timers
+            startTurnTimer();
+            startGameTimer();
+            
+            showMessage(`🎮 Game started! ${players[currentPlayerIndex].name} begins.`, 'success');
+        }
+        
+        function startTurnTimer() {
+            clearInterval(timerInterval);
+            timeLeft = currentDifficulty === 'easy' ? 45 : currentDifficulty === 'medium' ? 30 : 20;
+            
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    timeoutTurn();
+                }
+            }, 1000);
+        }
+        
+        function updateTimerDisplay() {
+            const display = document.getElementById('timer');
+            const fill = document.getElementById('timer-fill');
+            
+            if (gameActive) {
+                display.textContent = `⏱️ ${timeLeft}s`;
+                const percentage = (timeLeft / (currentDifficulty === 'easy' ? 45 : currentDifficulty === 'medium' ? 30 : 20)) * 100;
+                fill.style.width = percentage + '%';
+                
+                if (timeLeft <= 5) {
+                    display.style.color = '#d32f2f';
+                } else {
+                    display.style.color = '#e65100';
+                }
+            } else {
+                display.textContent = '⏱️ Ready';
+                fill.style.width = '100%';
+            }
+        }
+        
+        function startGameTimer() {
+            clearInterval(gameTimer);
+            gameTimer = setInterval(() => {
+                if (!gameStartTime) return;
+                
+                const elapsed = Math.floor((Date.now() - gameStartTime) / 1000);
+                const minutes = Math.floor(elapsed / 60);
+                const seconds = elapsed % 60;
+                
+                document.getElementById('time-played').textContent = 
+                    `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+        
+        function submitWord() {
+            if (!gameActive) return;
+            
+            const input = document.getElementById('word-input');
+            const word = input.value.trim().toLowerCase();
+            
+            if (!word) {
+                showMessage('❌ Please enter a word!', 'error');
+                return;
+            }
+            
+            // Check if word is valid
+            if (!isValidWord(word)) {
+                input.classList.add('error');
+                setTimeout(() => input.classList.remove('error'), 600);
+                showMessage('❌ Invalid word! Use Unit 2 vocabulary only.', 'error');
+                return;
+            }
+            
+            // Check word starts with correct letter
+            if (wordChain.length > 0) {
+                const lastWord = wordChain[wordChain.length - 1];
+                const lastLetter = lastWord[lastWord.length - 1];
+                const firstLetter = word[0];
+                
+                if (firstLetter !== lastLetter) {
+                    input.classList.add('error');
+                    setTimeout(() => input.classList.remove('error'), 600);
+                    showMessage(`❌ Word must start with "${lastLetter.toUpperCase()}"!`, 'error');
+                    return;
+                }
+            }
+            
+            // Check if word already used
+            if (usedWords.includes(word)) {
+                input.classList.add('error');
+                setTimeout(() => input.classList.remove('error'), 600);
+                showMessage('❌ Word already used!', 'error');
+                return;
+            }
+            
+            // Valid word!
+            wordChain.push(word);
+            usedWords.push(word);
+            players[currentPlayerIndex].words.push(word);
+            players[currentPlayerIndex].score += 10;
+            
+            // Clear input and update displays
+            input.value = '';
+            updateChainDisplay();
+            updateCurrentWordDisplay();
+            renderPlayers();
+            updateStats();
+            
+            showMessage(`✅ Great! ${players[currentPlayerIndex].name} added "${word}"`, 'success');
+            
+            // Next player
+            nextTurn();
+        }
+        
+        function isValidWord(word) {
+            return allWords.some(w => w.word.toLowerCase() === word);
+        }
+        
+        function updateChainDisplay() {
+            const container = document.getElementById('chain-words');
+            container.innerHTML = '';
+            
+            if (wordChain.length === 0) {
+                container.innerHTML = '<div class="chain-word">Start the chain!</div>';
+                return;
+            }
+            
+            wordChain.forEach((word, index) => {
+                const wordDiv = document.createElement('div');
+                wordDiv.className = 'chain-word';
+                wordDiv.textContent = word.toUpperCase();
+                
+                // Don't show arrow for last word
+                if (index < wordChain.length - 1) {
+                    wordDiv.style.marginRight = '30px';
+                }
+                
+                container.appendChild(wordDiv);
+            });
+        }
+        
+        function updateCurrentWordDisplay() {
+            const display = document.getElementById('current-word-display');
+            const hint = document.getElementById('last-letter-hint');
+            
+            if (wordChain.length === 0) {
+                display.textContent = 'Start with any Unit 2 word!';
+                hint.textContent = 'Choose any word from the vocabulary list';
+            } else {
+                const lastWord = wordChain[wordChain.length - 1];
+                const lastLetter = lastWord[lastWord.length - 1].toUpperCase();
+                display.textContent = lastLetter;
+                hint.textContent = `Next word must start with "${lastLetter}"`;
+            }
+            
+            // Update input placeholder
+            const input = document.getElementById('word-input');
+            if (wordChain.length === 0) {
+                input.placeholder = 'Enter any Unit 2 word...';
+            } else {
+                const lastLetter = wordChain[wordChain.length - 1][wordChain[wordChain.length - 1].length - 1].toUpperCase();
+                input.placeholder = `Enter word starting with "${lastLetter}"...`;
+            }
+            
+            // Show suggestions
+            showSuggestions();
+        }
+        
+        function showSuggestions() {
+            if (wordChain.length === 0) return;
+            
+            const lastLetter = wordChain[wordChain.length - 1][wordChain[wordChain.length - 1].length - 1];
+            const suggestions = allWords
+                .filter(w => 
+                    w.word.toLowerCase().startsWith(lastLetter) && 
+                    !usedWords.includes(w.word.toLowerCase())
+                )
+                .slice(0, 6);
+            
+            const container = document.getElementById('suggested-words');
+            const list = document.getElementById('suggested-list');
+            
+            if (suggestions.length > 0) {
+                container.style.display = 'block';
+                list.innerHTML = '';
+                
+                suggestions.forEach(word => {
+                    const suggestion = document.createElement('div');
+                    suggestion.className = 'suggested-word';
+                    suggestion.textContent = word.word;
+                    suggestion.onclick = () => {
+                        document.getElementById('word-input').value = word.word;
+                        document.getElementById('word-input').focus();
+                    };
+                    list.appendChild(suggestion);
+                });
+            } else {
+                container.style.display = 'none';
+            }
+        }
+        
+        function nextTurn() {
+            clearInterval(timerInterval);
+            currentPlayerIndex = (currentPlayerIndex + 1) % playerCount;
+            
+            renderPlayers();
+            startTurnTimer();
+            
+            document.getElementById('word-input').focus();
+            showMessage(`👉 ${players[currentPlayerIndex].name}'s turn!`, 'info');
+        }
+        
+        function timeoutTurn() {
+            players[currentPlayerIndex].score = Math.max(0, players[currentPlayerIndex].score - 5);
+            
+            showMessage(`⏰ Time's up! ${players[currentPlayerIndex].name} loses 5 points.`, 'warning');
+            
+            renderPlayers();
+            nextTurn();
+        }
+        
+        function skipTurn() {
+            if (!gameActive) return;
+            
+            players[currentPlayerIndex].score = Math.max(0, players[currentPlayerIndex].score - 5);
+            
+            showMessage(`⏭️ ${players[currentPlayerIndex].name} skipped turn (-5 points)`, 'warning');
+            
+            renderPlayers();
+            nextTurn();
+        }
+        
+        function resetGame() {
+            if (confirm('Are you sure you want to reset the game?')) {
+                gameActive = false;
+                clearInterval(timerInterval);
+                clearInterval(gameTimer);
+                
+                // Reset game state
+                wordChain = [];
+                usedWords = [];
+                currentPlayerIndex = 0;
+                currentRound = 1;
+                
+                // Reset players
+                initializePlayers();
+                
+                // Reset displays
+                updateChainDisplay();
+                updateCurrentWordDisplay();
+                updateStats();
+                updateTimerDisplay();
+                
+                // Reset buttons
+                document.getElementById('start-btn').disabled = false;
+                document.getElementById('submit-btn').disabled = true;
+                document.getElementById('word-input').disabled = true;
+                document.getElementById('word-input').value = '';
+                document.getElementById('suggested-words').style.display = 'none';
+                
+                showMessage('🔄 Game reset!', 'info');
+            }
+        }
+        
+        function updateStats() {
+            document.getElementById('chain-length').textContent = wordChain.length;
+            document.getElementById('current-round').textContent = currentRound;
+            document.getElementById('words-used').textContent = usedWords.length;
+        }
+        
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                submitWord();
+            }
+        }
+        
+        // Initialize game
+        function initGame() {
+            initializePlayers();
+            updateStats();
+            showMessage('🎮 Welcome to Word Chain! Choose player count and click "Start Game"!', 'info');
+        }
+        
+        document.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>

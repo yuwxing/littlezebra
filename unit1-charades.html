@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Charades Game - Unit 1 Animal Friends</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Fredoka', cursive;
+            background: linear-gradient(135deg, #56CCF2 0%, #2F80ED 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: white;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .game-container {
+            background: white;
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            max-width: 1200px;
+            width: 100%;
+        }
+        
+        .teams-setup {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .team-panel {
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .team-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .team-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .team-name-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-family: 'Fredoka', cursive;
+        }
+        
+        .team-size-select {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-family: 'Fredoka', cursive;
+        }
+        
+        .team-list {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 15px;
+            min-height: 200px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .team-member {
+            background: #f0f0f0;
+            border-radius: 10px;
+            padding: 8px;
+            margin-bottom: 8px;
+            font-size: 1rem;
+            color: #333;
+        }
+        
+        .game-area {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .word-display {
+            background: linear-gradient(45deg, #56CCF2, #2F80ED);
+            color: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            box-shadow: 0 10px 30px rgba(47,128,237,0.3);
+        }
+        
+        .word-display .hidden {
+            font-size: 3rem;
+            color: #333;
+        }
+        
+        .word-display .revealed {
+            animation: reveal 0.6s ease;
+        }
+        
+        @keyframes reveal {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .timer {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #2F80ED;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .timer.warning {
+            color: #ff6b6b;
+            animation: pulse 1s ease infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .category-badge {
+            background: #2F80ED;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #56CCF2, #2F80ED);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(47,128,237,0.4);
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(47,128,237,0.6);
+        }
+        
+        .btn.success {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+        }
+        
+        .btn.danger {
+            background: linear-gradient(45deg, #f44336, #da190b);
+        }
+        
+        .btn.secondary {
+            background: linear-gradient(45deg, #ff9800, #f57c00);
+        }
+        
+        .score-board {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .score-card {
+            background: #f8f9fa;
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .score-card.leading {
+            border-color: #4CAF50;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e8f5e8 100%);
+        }
+        
+        .team-score {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2F80ED;
+            margin-bottom: 10px;
+        }
+        
+        .team-name-display {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .message {
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+        
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+        
+        .message.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 2px solid #bee5eb;
+        }
+        
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+        
+        .animal-emoji {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            .teams-setup {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .word-display {
+                font-size: 2rem;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="location.href='index.html'">← Back to Games</button>
+    
+    <header>
+        <h1>🎭 Charades - Animal Friends</h1>
+        <p>Act out animals and actions!<br><span style="font-size: 1.2rem;">猜词游戏 - 动物朋友版</span></p>
+    </header>
+    
+    <main class="game-container">
+        <div class="teams-setup">
+            <div class="team-panel">
+                <h3 class="team-title">Team A</h3>
+                <div class="team-input">
+                    <input type="text" class="team-name-input" id="teamAName" placeholder="Team name">
+                    <select class="team-size-select" id="teamASize">
+                        <option value="2">2 players</option>
+                        <option value="3">3 players</option>
+                        <option value="4">4 players</option>
+                    </select>
+                </div>
+                <div class="team-list" id="teamAList"></div>
+                <button class="btn" onclick="setupTeam('A')">Setup Team</button>
+            </div>
+            
+            <div class="game-area">
+                <div class="animal-emoji" id="animalEmoji">🦁</div>
+                <div class="category-badge" id="categoryBadge">Animal Actions</div>
+                <div class="word-display" id="wordDisplay">
+                    <span class="hidden">?</span>
+                </div>
+                <div class="timer" id="timer">60</div>
+            </div>
+            
+            <div class="team-panel">
+                <h3 class="team-title">Team B</h3>
+                <div class="team-input">
+                    <input type="text" class="team-name-input" id="teamBName" placeholder="Team name">
+                    <select class="team-size-select" id="teamBSize">
+                        <option value="2">2 players</option>
+                        <option value="3">3 players</option>
+                        <option value="4">4 players</option>
+                    </select>
+                </div>
+                <div class="team-list" id="teamBList"></div>
+                <button class="btn" onclick="setupTeam('B')">Setup Team</button>
+            </div>
+        </div>
+        
+        <div class="score-board">
+            <div class="score-card" id="teamAScore">
+                <div class="team-name-display">Team A</div>
+                <div class="team-score" id="teamAPoints">0</div>
+                <div>Points</div>
+            </div>
+            <div class="score-card" id="teamBScore">
+                <div class="team-name-display">Team B</div>
+                <div class="team-score" id="teamBPoints">0</div>
+                <div>Points</div>
+            </div>
+        </div>
+        
+        <div id="message"></div>
+        
+        <div class="controls">
+            <button class="btn" onclick="startRound()">🎬 Start Round</button>
+            <button class="btn secondary" onclick="showWord()">👁️ Reveal Word</button>
+            <button class="btn success" onclick="correctGuess()">✅ Correct Guess</button>
+            <button class="btn danger" onclick="skipTurn()">⏭️ Skip Turn</button>
+            <button class="btn secondary" onclick="newGame()">🔄 New Game</button>
+        </div>
+    </main>
+    
+    <script>
+        // Unit 1 Animal Friends vocabulary for charades
+        const animalVocabulary = {
+            animals: [
+                { word: 'lion', chinese: '狮子', action: 'Act like a king of the jungle' },
+                { word: 'elephant', chinese: '大象', action: 'Show a long trunk and big ears' },
+                { word: 'monkey', chinese: '猴子', action: 'Climb and eat bananas' },
+                { word: 'tiger', chinese: '老虎', action: 'Be fierce and striped' },
+                { word: 'snake', chinese: '蛇', action: 'Slither on the ground' },
+                { word: 'bird', chinese: '鸟', action: 'Fly and chirp' },
+                { word: 'fish', chinese: '鱼', action: 'Swim underwater' },
+                { word: 'dog', chinese: '狗', action: 'Wag tail and bark' },
+                { word: 'cat', chinese: '猫', action: 'Purr and stretch' },
+                { word: 'rabbit', chinese: '兔子', action: 'Hop and eat carrots' }
+            ],
+            actions: [
+                { word: 'running', chinese: '跑步', action: 'Run in place quickly' },
+                { word: 'jumping', chinese: '跳跃', action: 'Jump up and down' },
+                { word: 'swimming', chinese: '游泳', action: 'Swim motions' },
+                { word: 'flying', chinese: '飞翔', action: 'Fly like a bird' },
+                { word: 'sleeping', chinese: '睡觉', action: 'Pretend to sleep' },
+                { word: 'eating', chinese: '吃饭', action: 'Eat something delicious' },
+                { word: 'playing', chinese: '玩耍', action: 'Play with toys' },
+                { word: 'hiding', chinese: '躲藏', action: 'Hide from something' }
+            ],
+            descriptions: [
+                { word: 'big', chinese: '大的', action: 'Show something very large' },
+                { word: 'small', chinese: '小的', action: 'Show something tiny' },
+                { word: 'fast', chinese: '快的', action: 'Move very quickly' },
+                { word: 'slow', chinese: '慢的', action: 'Move slowly' },
+                { word: 'happy', chinese: '开心的', action: 'Show great joy' },
+                { word: 'sad', chinese: '悲伤的', action: 'Show sadness' },
+                { word: 'strong', chinese: '强壮的', action: 'Show strength' },
+                { word: 'scared', chinese: '害怕的', action: 'Show being frightened' }
+            ]
+        };
+        
+        const animalEmojis = ['🦁', '🐘', '🐒', '🐅', '🐍', '🐦', '🐟', '🐕', '🐈', '🐰', '🦊', '🐻', '🐼', '🦒'];
+        
+        let currentWord = null;
+        let currentCategory = null;
+        let timer = null;
+        let timeLeft = 60;
+        let teamA = { name: 'Team A', members: [], score: 0 };
+        let teamB = { name: 'Team B', members: [], score: 0 };
+        let currentTeam = 'A';
+        let roundActive = false;
+        
+        function setupTeam(team) {
+            const nameInput = document.getElementById(`team${team}Name`);
+            const sizeSelect = document.getElementById(`team${team}Size`);
+            const list = document.getElementById(`team${team}List`);
+            
+            const teamName = nameInput.value || `Team ${team}`;
+            const teamSize = parseInt(sizeSelect.value);
+            
+            if (team === 'A') {
+                teamA.name = teamName;
+            } else {
+                teamB.name = teamName;
+            }
+            
+            list.innerHTML = '';
+            for (let i = 1; i <= teamSize; i++) {
+                const member = document.createElement('div');
+                member.className = 'team-member';
+                member.textContent = `Player ${i}`;
+                list.appendChild(member);
+                
+                if (team === 'A') {
+                    teamA.members.push(`Player ${i}`);
+                } else {
+                    teamB.members.push(`Player ${i}`);
+                }
+            }
+            
+            updateScoreDisplay();
+            showMessage(`${teamName} ready!`, 'success');
+        }
+        
+        function startRound() {
+            if (teamA.members.length === 0 || teamB.members.length === 0) {
+                showMessage('Please setup both teams first!', 'error');
+                return;
+            }
+            
+            // Select random category and word
+            const categories = Object.keys(animalVocabulary);
+            currentCategory = categories[Math.floor(Math.random() * categories.length)];
+            const words = animalVocabulary[currentCategory];
+            currentWord = words[Math.floor(Math.random() * words.length)];
+            
+            // Update display
+            const randomEmoji = animalEmojis[Math.floor(Math.random() * animalEmojis.length)];
+            document.getElementById('animalEmoji').textContent = randomEmoji;
+            document.getElementById('categoryBadge').textContent = 
+                currentCategory.charAt(0).toUpperCase() + currentCategory.slice(1);
+            
+            // Hide word
+            const wordDisplay = document.getElementById('wordDisplay');
+            wordDisplay.innerHTML = '<span class="hidden">?</span>';
+            
+            // Start timer
+            timeLeft = 60;
+            roundActive = true;
+            updateTimer();
+            timer = setInterval(updateTimer, 1000);
+            
+            showMessage(`${currentTeam === 'A' ? teamA.name : teamB.name} is acting!`, 'info');
+        }
+        
+        function updateTimer() {
+            const timerDisplay = document.getElementById('timer');
+            timerDisplay.textContent = timeLeft;
+            
+            if (timeLeft <= 10) {
+                timerDisplay.classList.add('warning');
+            } else {
+                timerDisplay.classList.remove('warning');
+            }
+            
+            if (timeLeft <= 0) {
+                endRound(false);
+            } else {
+                timeLeft--;
+            }
+        }
+        
+        function showWord() {
+            if (!currentWord || !roundActive) return;
+            
+            const wordDisplay = document.getElementById('wordDisplay');
+            wordDisplay.innerHTML = `
+                <div class="revealed">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">${currentWord.word}</div>
+                    <div style="font-size: 1.2rem; color: #666;">${currentWord.chinese}</div>
+                    <div style="font-size: 1rem; margin-top: 10px; font-style: italic;">${currentWord.action}</div>
+                </div>
+            `;
+        }
+        
+        function correctGuess() {
+            if (!currentWord || !roundActive) return;
+            
+            endRound(true);
+        }
+        
+        function skipTurn() {
+            if (!currentWord || !roundActive) return;
+            
+            endRound(false);
+        }
+        
+        function endRound(success) {
+            clearInterval(timer);
+            roundActive = false;
+            
+            if (success) {
+                if (currentTeam === 'A') {
+                    teamA.score += 10;
+                } else {
+                    teamB.score += 10;
+                }
+                showMessage(`Correct! ${currentWord.word} (${currentWord.chinese})`, 'success');
+            } else {
+                showMessage(`Time's up! The word was: ${currentWord.word} (${currentWord.chinese})`, 'error');
+            }
+            
+            // Show the word
+            const wordDisplay = document.getElementById('wordDisplay');
+            wordDisplay.innerHTML = `
+                <div class="revealed">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">${currentWord.word}</div>
+                    <div style="font-size: 1.2rem; color: #666;">${currentWord.chinese}</div>
+                </div>
+            `;
+            
+            updateScoreDisplay();
+            
+            // Switch teams
+            currentTeam = currentTeam === 'A' ? 'B' : 'A';
+        }
+        
+        function updateScoreDisplay() {
+            const teamACard = document.getElementById('teamAScore');
+            const teamBCard = document.getElementById('teamBScore');
+            
+            teamACard.querySelector('.team-name-display').textContent = teamA.name;
+            teamBCard.querySelector('.team-name-display').textContent = teamB.name;
+            
+            teamACard.querySelector('.team-score').textContent = teamA.score;
+            teamBCard.querySelector('.team-score').textContent = teamB.score;
+            
+            // Highlight leading team
+            if (teamA.score > teamB.score) {
+                teamACard.classList.add('leading');
+                teamBCard.classList.remove('leading');
+            } else if (teamB.score > teamA.score) {
+                teamBCard.classList.add('leading');
+                teamACard.classList.remove('leading');
+            } else {
+                teamACard.classList.remove('leading');
+                teamBCard.classList.remove('leading');
+            }
+        }
+        
+        function newGame() {
+            if (confirm('Start a new game? This will reset all scores.')) {
+                teamA.score = 0;
+                teamB.score = 0;
+                currentTeam = 'A';
+                roundActive = false;
+                clearInterval(timer);
+                
+                document.getElementById('wordDisplay').innerHTML = '<span class="hidden">?</span>';
+                document.getElementById('timer').textContent = '60';
+                document.getElementById('timer').classList.remove('warning');
+                
+                updateScoreDisplay();
+                showMessage('New game started!', 'success');
+            }
+        }
+        
+        function showMessage(text, type) {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = text;
+            messageEl.className = `message ${type}`;
+            
+            setTimeout(() => {
+                messageEl.textContent = '';
+                messageEl.className = 'message';
+            }, 3000);
+        }
+        
+        // Initialize game
+        window.onload = function() {
+            updateScoreDisplay();
+        };
+    </script>
+</body>
+</html>

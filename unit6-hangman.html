@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit 6 Hangman - Entertainment & Media</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Fredoka', cursive;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: white;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .game-container {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .hangman-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .hangman-drawing {
+            flex: 1;
+            min-width: 250px;
+            text-align: center;
+        }
+        
+        svg {
+            width: 100%;
+            max-width: 250px;
+            height: 250px;
+        }
+        
+        .game-info {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .category-info {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .category-label {
+            font-size: 1rem;
+            color: #bbb;
+            margin-bottom: 5px;
+        }
+        
+        .category-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #feca57;
+        }
+        
+        .hint-section {
+            background: rgba(254, 202, 87, 0.2);
+            border: 2px solid rgba(254, 202, 87, 0.5);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .hint-text {
+            font-size: 1.2rem;
+            color: #feca57;
+            text-align: center;
+        }
+        
+        .word-display {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .word-letters {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .letter-slot {
+            width: 50px;
+            height: 50px;
+            border-bottom: 3px solid #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .letter-slot.filled {
+            animation: reveal 0.5s ease;
+        }
+        
+        @keyframes reveal {
+            0% { transform: rotateY(90deg); opacity: 0; }
+            50% { transform: rotateY(0deg); opacity: 0.5; }
+            100% { transform: rotateY(0deg); opacity: 1; }
+        }
+        
+        .wrong-letters {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .wrong-letters-display {
+            background: rgba(255,107,107,0.2);
+            border: 2px solid rgba(255,107,107,0.5);
+            padding: 15px;
+            border-radius: 15px;
+            display: inline-block;
+        }
+        
+        .wrong-letter {
+            display: inline-block;
+            margin: 5px;
+            padding: 8px 12px;
+            background: rgba(255,107,107,0.5);
+            border-radius: 8px;
+            font-weight: 600;
+            animation: wrongGuess 0.5s ease;
+        }
+        
+        @keyframes wrongGuess {
+            0% { transform: scale(1.3); background: rgba(255,107,107,0.8); }
+            100% { transform: scale(1); background: rgba(255,107,107,0.5); }
+        }
+        
+        .keyboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(45px, 1fr));
+            gap: 8px;
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+        
+        .key {
+            padding: 12px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 10px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .key:hover:not(:disabled) {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .key:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            background: rgba(255,255,255,0.05);
+        }
+        
+        .key.correct {
+            background: rgba(76,175,80,0.5);
+            border-color: #4CAF50;
+        }
+        
+        .key.wrong {
+            background: rgba(255,107,107,0.5);
+            border-color: #ff6b6b;
+        }
+        
+        .game-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255,107,107,0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #feca57;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            color: #bbb;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+        
+        .modal h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .win-text {
+            color: #4CAF50;
+        }
+        
+        .lose-text {
+            color: #ff6b6b;
+        }
+        
+        .word-reveal {
+            font-size: 1.8rem;
+            margin: 20px 0;
+            color: #feca57;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .hangman-section {
+                justify-content: center;
+            }
+            
+            .letter-slot {
+                width: 40px;
+                height: 40px;
+                font-size: 1.5rem;
+            }
+            
+            .keyboard {
+                grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+                gap: 5px;
+            }
+            
+            .key {
+                padding: 10px 5px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🎯 Unit 6 Hangman</h1>
+        <p style="color: #bbb; font-size: 1.2rem;">Entertainment & Media Vocabulary</p>
+    </header>
+    
+    <main class="game-container">
+        <div class="hangman-section">
+            <div class="hangman-drawing">
+                <svg id="hangmanSvg" viewBox="0 0 250 250">
+                    <!-- Gallows -->
+                    <line x1="10" y1="230" x2="150" y2="230" stroke="#fff" stroke-width="4"/>
+                    <line x1="50" y1="230" x2="50" y2="20" stroke="#fff" stroke-width="4"/>
+                    <line x1="50" y1="20" x2="130" y2="20" stroke="#fff" stroke-width="4"/>
+                    <line x1="130" y1="20" x2="130" y2="50" stroke="#fff" stroke-width="4"/>
+                    
+                    <!-- Body parts (hidden initially) -->
+                    <circle id="head" cx="130" cy="70" r="20" stroke="#ff6b6b" stroke-width="3" fill="none" style="display:none;"/>
+                    <line id="body" x1="130" y1="90" x2="130" y2="150" stroke="#ff6b6b" stroke-width="3" style="display:none;"/>
+                    <line id="leftArm" x1="130" y1="110" x2="100" y2="130" stroke="#ff6b6b" stroke-width="3" style="display:none;"/>
+                    <line id="rightArm" x1="130" y1="110" x2="160" y2="130" stroke="#ff6b6b" stroke-width="3" style="display:none;"/>
+                    <line id="leftLeg" x1="130" y1="150" x2="110" y2="190" stroke="#ff6b6b" stroke-width="3" style="display:none;"/>
+                    <line id="rightLeg" x1="130" y1="150" x2="150" y2="190" stroke="#ff6b6b" stroke-width="3" style="display:none;"/>
+                </svg>
+            </div>
+            
+            <div class="game-info">
+                <div class="category-info">
+                    <div class="category-label">Category</div>
+                    <div class="category-value" id="categoryDisplay">Entertainment</div>
+                </div>
+                
+                <div class="hint-section">
+                    <div class="hint-text" id="hintText">Click 'Get Hint' for help!</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="word-display">
+            <div class="word-letters" id="wordLetters"></div>
+        </div>
+        
+        <div class="wrong-letters">
+            <div class="wrong-letters-display" id="wrongLettersDisplay">
+                Wrong Letters: <span id="wrongLetters"></span>
+            </div>
+        </div>
+        
+        <div class="keyboard" id="keyboard"></div>
+        
+        <div class="game-controls">
+            <button class="btn btn-primary" onclick="getHint()">💡 Get Hint</button>
+            <button class="btn btn-secondary" onclick="speakWord()">🔊 Say Word</button>
+            <button class="btn btn-secondary" onclick="newGame()">🔄 New Word</button>
+        </div>
+        
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value" id="winsCount">0</div>
+                <div class="stat-label">Wins</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="lossesCount">0</div>
+                <div class="stat-label">Losses</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="streakCount">0</div>
+                <div class="stat-label">Streak</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="remainingGuesses">6</div>
+                <div class="stat-label">Guesses Left</div>
+            </div>
+        </div>
+    </main>
+    
+    <div class="modal" id="gameModal">
+        <div class="modal-content">
+            <h2 id="modalTitle">Game Over!</h2>
+            <p id="modalMessage"></p>
+            <div class="word-reveal" id="wordReveal"></div>
+            <button class="btn btn-primary" onclick="closeModal()">Continue</button>
+        </div>
+    </div>
+    
+    <script>
+        // Unit 6 Entertainment & Media Vocabulary
+        const unit6Vocabulary = [
+            // Movies & TV
+            { english: "movie", chinese: "电影", category: "Movies & TV", hint: "Watch at the cinema" },
+            { english: "cinema", chinese: "电影院", category: "Movies & TV", hint: "Place to watch movies" },
+            { english: "television", chinese: "电视", category: "Movies & TV", hint: "TV screen entertainment" },
+            { english: "actor", chinese: "演员", category: "Movies & TV", hint: "Performs in movies" },
+            { english: "actress", chinese: "女演员", category: "Movies & TV", hint: "Female performer" },
+            { english: "director", chinese: "导演", category: "Movies & TV", hint: "Controls the movie" },
+            { english: "character", chinese: "角色", category: "Movies & TV", hint: "Person in a story" },
+            { english: "screen", chinese: "屏幕", category: "Movies & TV", hint: "Display surface" },
+            { english: "series", chinese: "连续剧", category: "Movies & TV", hint: "TV episodes" },
+            { english: "episode", chinese: "集", category: "Movies & TV", hint: "One part of a series" },
+            { english: "cartoon", chinese: "动画片", category: "Movies & TV", hint: "Animated show" },
+            { english: "animation", chinese: "动画", category: "Movies & TV", hint: "Drawing movement" },
+            { english: "documentary", chinese: "纪录片", category: "Movies & TV", hint: "Real life story" },
+            { english: "comedy", chinese: "喜剧", category: "Movies & TV", hint: "Funny show" },
+            { english: "drama", chinese: "戏剧", category: "Movies & TV", hint: "Serious story" },
+            { english: "action", chinese: "动作", category: "Movies & TV", hint: "Exciting movement" },
+            
+            // Music & Performance
+            { english: "music", chinese: "音乐", category: "Music & Performance", hint: "Sound with rhythm" },
+            { english: "song", chinese: "歌曲", category: "Music & Performance", hint: "Sung with lyrics" },
+            { english: "concert", chinese: "音乐会", category: "Music & Performance", hint: "Live music show" },
+            { english: "performance", chinese: "表演", category: "Music & Performance", hint: "Live entertainment" },
+            { english: "musician", chinese: "音乐家", category: "Music & Performance", hint: "Plays music" },
+            { english: "singer", chinese: "歌手", category: "Music & Performance", hint: "Sings songs" },
+            { english: "band", chinese: "乐队", category: "Music & Performance", hint: "Group of musicians" },
+            { english: "album", chinese: "专辑", category: "Music & Performance", hint: "Collection of songs" },
+            { english: "melody", chinese: "旋律", category: "Music & Performance", hint: "Tune sequence" },
+            { english: "rhythm", chinese: "节奏", category: "Music & Performance", hint: "Beat pattern" },
+            { english: "instrument", chinese: "乐器", category: "Music & Performance", hint: "Music tool" },
+            { english: "guitar", chinese: "吉他", category: "Music & Performance", hint: "Six-string instrument" },
+            { english: "piano", chinese: "钢琴", category: "Music & Performance", hint: "Black and white keys" },
+            { english: "drum", chinese: "鼓", category: "Music & Performance", hint: "Percussion instrument" },
+            { english: "stage", chinese: "舞台", category: "Music & Performance", hint: "Performance platform" },
+            { english: "audience", chinese: "观众", category: "Music & Performance", hint: "People watching" },
+            { english: "applause", chinese: "掌声", category: "Music & Performance", hint: "Clapping sound" },
+            
+            // Media & Technology
+            { english: "internet", chinese: "互联网", category: "Media & Technology", hint: "Global network" },
+            { english: "website", chinese: "网站", category: "Media & Technology", hint: "Online page" },
+            { english: "social media", chinese: "社交媒体", category: "Media & Technology", hint: "Online sharing" },
+            { english: "video", chinese: "视频", category: "Media & Technology", hint: "Moving pictures" },
+            { english: "streaming", chinese: "流媒体", category: "Media & Technology", hint: "Online watching" },
+            { english: "podcast", chinese: "播客", category: "Media & Technology", hint: "Audio show" },
+            { english: "channel", chinese: "频道", category: "Media & Technology", hint: "Content stream" },
+            { english: "content", chinese: "内容", category: "Media & Technology", hint: "Information material" },
+            { english: "platform", chinese: "平台", category: "Media & Technology", hint: "Service base" },
+            { english: "subscribe", chinese: "订阅", category: "Media & Technology", hint: "Follow content" },
+            { english: "download", chinese: "下载", category: "Media & Technology", hint: "Save from internet" },
+            { english: "upload", chinese: "上传", category: "Media & Technology", hint: "Put online" },
+            { english: "share", chinese: "分享", category: "Media & Technology", hint: "Give to others" },
+            { english: "like", chinese: "点赞", category: "Media & Technology", hint: "Social approval" },
+            { english: "comment", chinese: "评论", category: "Media & Technology", hint: "Written opinion" },
+            
+            // General Entertainment
+            { english: "game", chinese: "游戏", category: "Entertainment", hint: "Play activity" },
+            { english: "entertainment", chinese: "娱乐", category: "Entertainment", hint: "Fun activity" },
+            { english: "fun", chinese: "乐趣", category: "Entertainment", hint: "Enjoyment" },
+            { english: "popular", chinese: "受欢迎的", category: "Entertainment", hint: "Well-liked" },
+            { english: "famous", chinese: "著名的", category: "Entertainment", hint: "Well-known" }
+        ];
+        
+        let currentWord = null;
+        let guessedLetters = [];
+        let wrongLetters = [];
+        let wins = 0;
+        let losses = 0;
+        let streak = 0;
+        let remainingGuesses = 6;
+        let hintUsed = false;
+        
+        const bodyParts = ['head', 'body', 'leftArm', 'rightArm', 'leftLeg', 'rightLeg'];
+        
+        function initGame() {
+            createKeyboard();
+            loadStats();
+            newGame();
+        }
+        
+        function createKeyboard() {
+            const keyboard = document.getElementById('keyboard');
+            const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+            
+            letters.forEach(letter => {
+                const key = document.createElement('button');
+                key.className = 'key';
+                key.textContent = letter;
+                key.onclick = () => guessLetter(letter);
+                key.id = `key-${letter}`;
+                keyboard.appendChild(key);
+            });
+        }
+        
+        function newGame() {
+            // Reset game state
+            currentWord = unit6Vocabulary[Math.floor(Math.random() * unit6Vocabulary.length)];
+            guessedLetters = [];
+            wrongLetters = [];
+            remainingGuesses = 6;
+            hintUsed = false;
+            
+            // Reset UI
+            document.getElementById('wrongLetters').textContent = '';
+            document.getElementById('hintText').textContent = 'Click "Get Hint" for help!';
+            document.getElementById('categoryDisplay').textContent = currentWord.category;
+            document.getElementById('remainingGuesses').textContent = remainingGuesses;
+            
+            // Reset hangman drawing
+            bodyParts.forEach(part => {
+                document.getElementById(part).style.display = 'none';
+            });
+            
+            // Reset keyboard
+            document.querySelectorAll('.key').forEach(key => {
+                key.disabled = false;
+                key.classList.remove('correct', 'wrong');
+            });
+            
+            // Update word display
+            updateWordDisplay();
+        }
+        
+        function updateWordDisplay() {
+            const wordLetters = document.getElementById('wordLetters');
+            wordLetters.innerHTML = '';
+            
+            currentWord.english.split('').forEach(letter => {
+                const slot = document.createElement('div');
+                slot.className = 'letter-slot';
+                
+                if (guessedLetters.includes(letter)) {
+                    slot.textContent = letter;
+                    slot.classList.add('filled');
+                } else {
+                    slot.textContent = '';
+                }
+                
+                wordLetters.appendChild(slot);
+            });
+        }
+        
+        function guessLetter(letter) {
+            if (guessedLetters.includes(letter) || wrongLetters.includes(letter)) {
+                return;
+            }
+            
+            const key = document.getElementById(`key-${letter}`);
+            key.disabled = true;
+            
+            if (currentWord.english.toUpperCase().includes(letter)) {
+                guessedLetters.push(letter);
+                key.classList.add('correct');
+                updateWordDisplay();
+                
+                // Check win
+                if (currentWord.english.split('').every(l => guessedLetters.includes(l))) {
+                    endGame(true);
+                }
+            } else {
+                wrongLetters.push(letter);
+                key.classList.add('wrong');
+                remainingGuesses--;
+                
+                // Update wrong letters display
+                document.getElementById('wrongLetters').textContent = wrongLetters.join(' ');
+                
+                // Update hangman drawing
+                const bodyPartIndex = 6 - remainingGuesses - 1;
+                if (bodyPartIndex >= 0 && bodyPartIndex < bodyParts.length) {
+                    document.getElementById(bodyParts[bodyPartIndex]).style.display = 'block';
+                }
+                
+                // Update remaining guesses
+                document.getElementById('remainingGuesses').textContent = remainingGuesses;
+                
+                // Check loss
+                if (remainingGuesses === 0) {
+                    endGame(false);
+                }
+            }
+        }
+        
+        function getHint() {
+            if (!hintUsed && currentWord.hint) {
+                hintUsed = true;
+                document.getElementById('hintText').textContent = `Hint: ${currentWord.hint}`;
+                
+                // Slight penalty for using hint
+                if (remainingGuesses > 1) {
+                    remainingGuesses--;
+                    document.getElementById('remainingGuesses').textContent = remainingGuesses;
+                }
+            }
+        }
+        
+        function speakWord() {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(currentWord.english);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.8;
+                speechSynthesis.speak(utterance);
+            }
+        }
+        
+        function endGame(won) {
+            if (won) {
+                wins++;
+                streak++;
+                showGameModal(true, `Great job! You guessed the word!`);
+            } else {
+                losses++;
+                streak = 0;
+                showGameModal(false, `Game over! The word was:`);
+            }
+            
+            updateStats();
+            saveStats();
+        }
+        
+        function showGameModal(won, message) {
+            const modal = document.getElementById('gameModal');
+            const title = document.getElementById('modalTitle');
+            const modalMessage = document.getElementById('modalMessage');
+            const wordReveal = document.getElementById('wordReveal');
+            
+            if (won) {
+                title.innerHTML = '<span class="win-text">🎉 Victory!</span>';
+                title.className = 'win-text';
+            } else {
+                title.innerHTML = '<span class="lose-text">😔 Game Over</span>';
+                title.className = 'lose-text';
+            }
+            
+            modalMessage.textContent = message;
+            wordReveal.innerHTML = `
+                <div><strong>${currentWord.english}</strong></div>
+                <div style="font-size: 1.2rem; color: #bbb; margin-top: 10px;">${currentWord.chinese}</div>
+                <div style="font-size: 1rem; color: #feca57; margin-top: 5px;">${currentWord.category}</div>
+            `;
+            
+            modal.style.display = 'flex';
+        }
+        
+        function closeModal() {
+            document.getElementById('gameModal').style.display = 'none';
+            newGame();
+        }
+        
+        function updateStats() {
+            document.getElementById('winsCount').textContent = wins;
+            document.getElementById('lossesCount').textContent = losses;
+            document.getElementById('streakCount').textContent = streak;
+        }
+        
+        function saveStats() {
+            localStorage.setItem('hangmanStats', JSON.stringify({
+                wins: wins,
+                losses: losses,
+                streak: streak
+            }));
+        }
+        
+        function loadStats() {
+            const stats = localStorage.getItem('hangmanStats');
+            if (stats) {
+                const parsed = JSON.parse(stats);
+                wins = parsed.wins || 0;
+                losses = parsed.losses || 0;
+                streak = parsed.streak || 0;
+                updateStats();
+            }
+        }
+        
+        // Keyboard support
+        document.addEventListener('keydown', function(e) {
+            if (e.key.match(/^[a-zA-Z]$/)) {
+                guessLetter(e.key.toUpperCase());
+            }
+        });
+        
+        // Initialize game when page loads
+        document.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>

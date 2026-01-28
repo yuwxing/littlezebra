@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit 2 Master - No Rules, No Order</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Fredoka', cursive;
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 50%, #FE6B8B 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: white;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            background: linear-gradient(45deg, #fff, #f8f9fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: bounce 2s ease-in-out infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .subtitle {
+            font-size: 1.5rem;
+            color: #fff;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            max-width: 400px;
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            margin: 20px auto;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            border-radius: 10px;
+            transition: width 2s ease;
+        }
+        
+        .vocabulary-preview {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 40px;
+            max-width: 800px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .vocabulary-preview h3 {
+            color: #fff;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+        
+        .vocabulary-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+        }
+        
+        .vocab-word {
+            background: rgba(255,255,255,0.15);
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        .vocab-word:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            width: 100%;
+        }
+        
+        .game-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 25px;
+            padding: 35px;
+            text-align: center;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .game-card:hover::before {
+            left: 100%;
+        }
+        
+        .game-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            border-color: rgba(255,255,255,0.4);
+        }
+        
+        .game-icon {
+            font-size: 4.5rem;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+        }
+        
+        .game-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #fff;
+        }
+        
+        .game-subtitle {
+            font-size: 1.1rem;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+        
+        .game-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #FFE082;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.8);
+        }
+        
+        .play-btn {
+            background: linear-gradient(45deg, #FFE082, #FFD54F);
+            color: #333;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255,208,130,0.4);
+        }
+        
+        .play-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(255,208,130,0.6);
+        }
+        
+        .difficulty-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.3);
+            color: #FFE082;
+        }
+        
+        .audio-controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .audio-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        
+        .audio-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .stars {
+            color: #FFE082;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-in {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .game-card {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🏃‍♀️ Unit 2 Master</h1>
+        <p class="subtitle">No Rules, No Order - Action & Movement Vocabulary!</p>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+    </header>
+    
+    <section class="vocabulary-preview animate-in">
+        <h3>🎯 Today's Action Words</h3>
+        <div class="vocabulary-list" id="vocabList">
+            <!-- Words will be populated by JavaScript -->
+        </div>
+        <div class="audio-controls">
+            <button class="audio-btn" onclick="playAllWords()">🔊 Play All</button>
+            <button class="audio-btn" onclick="playRandomWord()">🎲 Random Word</button>
+        </div>
+    </section>
+    
+    <main class="games-grid">
+        <article class="game-card animate-in" style="animation-delay: 0.1s;" onclick="location.href='unit2-hangman.html'">
+            <div class="difficulty-badge">Classic</div>
+            <div class="game-icon">🎯</div>
+            <h2 class="game-title">Hangman</h2>
+            <p class="game-subtitle">Guess action words letter by letter</p>
+            <div class="stars">⭐⭐⭐⭐⭐</div>
+            <div class="game-stats">
+                <div class="stat">
+                    <div class="stat-value">49</div>
+                    <div class="stat-label">Words</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">∞</div>
+                    <div class="stat-label">Rounds</div>
+                </div>
+            </div>
+            <button class="play-btn">Play Now</button>
+        </article>
+        
+        <article class="game-card animate-in" style="animation-delay: 0.2s;" onclick="location.href='unit2-charades.html'">
+            <div class="difficulty-badge">Team Play</div>
+            <div class="game-icon">🎭</div>
+            <h2 class="game-title">Charades</h2>
+            <p class="game-subtitle">Act out movements and actions!</p>
+            <div class="stars">⭐⭐⭐⭐⭐</div>
+            <div class="game-stats">
+                <div class="stat">
+                    <div class="stat-value">60</div>
+                    <div class="stat-label">Seconds</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">2-4</div>
+                    <div class="stat-label">Teams</div>
+                </div>
+            </div>
+            <button class="play-btn">Play Now</button>
+        </article>
+        
+        <article class="game-card animate-in" style="animation-delay: 0.3s;" onclick="location.href='unit2-pictionary.html'">
+            <div class="difficulty-badge">Creative</div>
+            <div class="game-icon">🎨</div>
+            <h2 class="game-title">Pictionary</h2>
+            <p class="game-subtitle">Draw action concepts!</p>
+            <div class="stars">⭐⭐⭐⭐⭐</div>
+            <div class="game-stats">
+                <div class="stat">
+                    <div class="stat-value">90</div>
+                    <div class="stat-label">Seconds</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">∞</div>
+                    <div class="stat-label">Drawing</div>
+                </div>
+            </div>
+            <button class="play-btn">Play Now</button>
+        </article>
+        
+        <article class="game-card animate-in" style="animation-delay: 0.4s;" onclick="location.href='unit2-bingo.html'">
+            <div class="difficulty-badge">Listening</div>
+            <div class="game-icon">🎪</div>
+            <h2 class="game-title">Vocabulary Bingo</h2>
+            <p class="game-subtitle">Listen and mark action words!</p>
+            <div class="stars">⭐⭐⭐⭐⭐</div>
+            <div class="game-stats">
+                <div class="stat">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">Cards</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">🎵</div>
+                    <div class="stat-label">Audio</div>
+                </div>
+            </div>
+            <button class="play-btn">Play Now</button>
+        </article>
+    </main>
+    
+    <script>
+        // Unit 2 No Rules, No Order Vocabulary
+        const unit2Vocabulary = [
+            // Action Verbs - Movement
+            { english: "run", chinese: "跑", category: "Movement", hint: "Fast movement on foot" },
+            { english: "jump", chinese: "跳", category: "Movement", hint: "Push off ground with legs" },
+            { english: "walk", chinese: "走", category: "Movement", hint: "Slow movement on foot" },
+            { english: "dance", chinese: "跳舞", category: "Movement", hint: "Move body to music" },
+            { english: "climb", chinese: "爬", category: "Movement", hint: "Go up using hands/feet" },
+            { english: "swim", chinese: "游泳", category: "Movement", hint: "Move through water" },
+            { english: "fly", chinese: "飞", category: "Movement", hint: "Move through air" },
+            { english: "slide", chinese: "滑", category: "Movement", hint: "Move smoothly over surface" },
+            { english: "roll", chinese: "滚动", category: "Movement", hint: "Turn over and over" },
+            { english: "spin", chinese: "旋转", category: "Movement", hint: "Turn around quickly" },
+            { english: "bounce", chinese: "弹跳", category: "Movement", hint: "Jump up and down repeatedly" },
+            { english: "leap", chinese: "跳跃", category: "Movement", hint: "Jump far or high" },
+            
+            // Action Verbs - Play & Fun
+            { english: "play", chinese: "玩", category: "Play", hint: "Enjoy activities" },
+            { english: "laugh", chinese: "笑", category: "Play", hint: "Make happy sounds" },
+            { english: "shout", chinese: "喊", category: "Play", hint: "Speak loudly" },
+            { english: "cheer", chinese: "欢呼", category: "Play", hint: "Show support loudly" },
+            { english: "celebrate", chinese: "庆祝", category: "Play", hint: "Mark happy occasion" },
+            { english: "compete", chinese: "竞争", category: "Play", hint: "Try to win against others" },
+            { english: "win", chinese: "赢", category: "Play", hint: "Be the best" },
+            { english: "lose", chinese: "输", category: "Play", hint: "Not be the winner" },
+            { english: "chase", chinese: "追逐", category: "Play", hint: "Run after someone" },
+            { english: "hide", chinese: "躲藏", category: "Play", hint: "Make yourself not seen" },
+            { english: "seek", chinese: "寻找", category: "Play", hint: "Look for something" },
+            { english: "throw", chinese: "扔", category: "Play", hint: "Send through air with hand" },
+            { english: "catch", chinese: "接", category: "Play", hint: "Stop moving object" },
+            
+            // Sports & Games
+            { english: "sport", chinese: "运动", category: "Sports", hint: "Physical activity" },
+            { english: "game", chinese: "游戏", category: "Sports", hint: "Activity with rules" },
+            { english: "team", chinese: "队伍", category: "Sports", hint: "Group of players" },
+            { english: "score", chinese: "得分", category: "Sports", hint: "Get points" },
+            { english: "goal", chinese: "目标", category: "Sports", hint: "What you try to achieve" },
+            { english: "rule", chinese: "规则", category: "Sports", hint: "What you must follow" },
+            { english: "match", chinese: "比赛", category: "Sports", hint: "Sports competition" },
+            { english: "practice", chinese: "练习", category: "Sports", hint: "Train to get better" },
+            { english: "training", chinese: "训练", category: "Sports", hint: "Regular practice" },
+            { english: "fitness", chinese: "健康", category: "Sports", hint: "Physical condition" },
+            
+            // Movement & Speed
+            { english: "fast", chinese: "快的", category: "Movement", hint: "Moving quickly" },
+            { english: "slow", chinese: "慢的", category: "Movement", hint: "Moving without speed" },
+            { english: "quick", chinese: "迅速的", category: "Movement", hint: "Happening fast" },
+            { english: "speed", chinese: "速度", category: "Movement", hint: "How fast something moves" },
+            { english: "rush", chinese: "冲", category: "Movement", hint: "Move with urgency" },
+            { english: "dash", chinese: "猛冲", category: "Movement", hint: "Run very fast for short distance" },
+            { english: "sprint", chinese: "冲刺", category: "Movement", hint: "Run at top speed" },
+            { english: "race", chinese: "比赛", category: "Movement", hint: "Competition of speed" },
+            
+            // Chaos & Freedom
+            { english: "wild", chinese: "野生的", category: "Freedom", hint: "Not controlled" },
+            { english: "free", chinese: "自由的", category: "Freedom", hint: "Not restricted" },
+            { english: "crazy", chinese: "疯狂的", category: "Freedom", hint: "Very unusual" },
+            { english: "messy", chinese: "混乱的", category: "Freedom", hint: "Not organized" },
+            { english: "disorder", chinese: "无序", category: "Freedom", hint: "Lack of organization" },
+            { english: "chaos", chinese: "混乱", category: "Freedom", hint: "Complete confusion" },
+            { english: "freedom", chinese: "自由", category: "Freedom", hint: "Being able to choose" },
+            { english: "spontaneous", chinese: "自发的", category: "Freedom", hint: "Not planned" },
+            { english: "random", chinese: "随机的", category: "Freedom", hint: "Without pattern" },
+            { english: "unpredictable", chinese: "不可预测的", category: "Freedom", hint: "Cannot know what's next" }
+        ];
+        
+        // Populate vocabulary list
+        function populateVocabulary() {
+            const vocabList = document.getElementById('vocabList');
+            const previewWords = unit2Vocabulary.slice(0, 20); // Show first 20 words
+            
+            previewWords.forEach((word, index) => {
+                const wordElement = document.createElement('div');
+                wordElement.className = 'vocab-word';
+                wordElement.textContent = `${word.english} (${word.chinese})`;
+                wordElement.onclick = () => speakWord(word.english);
+                wordElement.style.animationDelay = `${index * 0.05}s`;
+                wordElement.classList.add('animate-in');
+                vocabList.appendChild(wordElement);
+            });
+        }
+        
+        // Speech synthesis
+        function speakWord(word) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(word);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.8;
+                speechSynthesis.speak(utterance);
+            }
+        }
+        
+        function playAllWords() {
+            const previewWords = unit2Vocabulary.slice(0, 10);
+            let index = 0;
+            
+            function speakNext() {
+                if (index < previewWords.length) {
+                    speakWord(previewWords[index].english);
+                    index++;
+                    setTimeout(speakNext, 2000);
+                }
+            }
+            speakNext();
+        }
+        
+        function playRandomWord() {
+            const randomWord = unit2Vocabulary[Math.floor(Math.random() * unit2Vocabulary.length)];
+            speakWord(randomWord.english);
+            
+            // Highlight word if it's in the preview
+            const words = document.querySelectorAll('.vocab-word');
+            words.forEach(wordElement => {
+                if (wordElement.textContent.includes(randomWord.english)) {
+                    wordElement.style.background = 'rgba(255,255,255,0.4)';
+                    setTimeout(() => {
+                        wordElement.style.background = 'rgba(255,255,255,0.15)';
+                    }, 2000);
+                }
+            });
+        }
+        
+        // Animate progress bar
+        function animateProgress() {
+            setTimeout(() => {
+                document.getElementById('progressBar').style.width = '25%'; // Unit 2 of 8 units
+            }, 500);
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            populateVocabulary();
+            animateProgress();
+            
+            // Add entrance animations
+            const cards = document.querySelectorAll('.game-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                }, index * 200);
+            });
+        });
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            const cards = document.querySelectorAll('.game-card');
+            const currentIndex = Array.from(cards).findIndex(card => card.matches(':hover'));
+            
+            if (e.key === 'ArrowRight' && currentIndex < cards.length - 1) {
+                cards[currentIndex + 1].focus();
+            } else if (e.key === 'ArrowLeft' && currentIndex > 0) {
+                cards[currentIndex - 1].focus();
+            } else if (e.key === 'Enter' && currentIndex >= 0) {
+                cards[currentIndex].click();
+            }
+        });
+    </script>
+</body>
+</html>

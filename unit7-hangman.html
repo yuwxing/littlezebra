@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit 7 Hangman - Science & Technology</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Fredoka', cursive;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: white;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            background: linear-gradient(45deg, #00d2ff, #3a7bd5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: #00d2ff; /* Fallback color for browsers that don't support text clipping */
+        }
+        
+        .game-container {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 1px solid rgba(100,181,246,0.3);
+        }
+        
+        .hangman-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .hangman-drawing {
+            flex: 1;
+            min-width: 250px;
+            text-align: center;
+        }
+        
+        svg {
+            width: 100%;
+            max-width: 250px;
+            height: 250px;
+        }
+        
+        .game-info {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .category-info {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(100,181,246,0.3);
+        }
+        
+        .category-label {
+            font-size: 1rem;
+            color: #b3e5fc;
+            margin-bottom: 5px;
+        }
+        
+        .category-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #64b5f6;
+        }
+        
+        .hint-section {
+            background: rgba(100,181,246,0.2);
+            border: 2px solid rgba(100,181,246,0.5);
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .hint-text {
+            font-size: 1.2rem;
+            color: #64b5f6;
+            text-align: center;
+        }
+        
+        .word-display {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .word-letters {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .letter-slot {
+            width: 50px;
+            height: 50px;
+            border-bottom: 3px solid #64b5f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .letter-slot.filled {
+            animation: reveal 0.5s ease;
+        }
+        
+        @keyframes reveal {
+            0% { transform: rotateY(90deg); opacity: 0; }
+            50% { transform: rotateY(0deg); opacity: 0.5; }
+            100% { transform: rotateY(0deg); opacity: 1; }
+        }
+        
+        .wrong-letters {
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .wrong-letters-display {
+            background: rgba(255,107,107,0.2);
+            border: 2px solid rgba(255,107,107,0.5);
+            padding: 15px;
+            border-radius: 15px;
+            display: inline-block;
+        }
+        
+        .wrong-letter {
+            display: inline-block;
+            margin: 5px;
+            padding: 8px 12px;
+            background: rgba(255,107,107,0.5);
+            border-radius: 8px;
+            font-weight: 600;
+            animation: wrongGuess 0.5s ease;
+        }
+        
+        @keyframes wrongGuess {
+            0% { transform: scale(1.3); background: rgba(255,107,107,0.8); }
+            100% { transform: scale(1); background: rgba(255,107,107,0.5); }
+        }
+        
+        .keyboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(45px, 1fr));
+            gap: 8px;
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+        
+        .key {
+            padding: 12px;
+            border: 2px solid rgba(100,181,246,0.3);
+            border-radius: 10px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .key:hover:not(:disabled) {
+            background: rgba(100,181,246,0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .key:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            background: rgba(255,255,255,0.05);
+        }
+        
+        .key.correct {
+            background: rgba(76,175,80,0.5);
+            border-color: #4CAF50;
+        }
+        
+        .key.wrong {
+            background: rgba(255,107,107,0.5);
+            border-color: #ff6b6b;
+        }
+        
+        .game-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #00d2ff, #3a7bd5);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0,210,255,0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(100,181,246,0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #64b5f6;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            color: #b3e5fc;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #0f2027, #203a43);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            border: 2px solid rgba(100,181,246,0.3);
+        }
+        
+        .modal h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .win-text {
+            color: #4CAF50;
+        }
+        
+        .lose-text {
+            color: #ff6b6b;
+        }
+        
+        .word-reveal {
+            font-size: 1.8rem;
+            margin: 20px 0;
+            color: #64b5f6;
+        }
+        
+        .completion-celebration {
+            background: linear-gradient(45deg, #00d2ff, #3a7bd5);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: center;
+            animation: celebrationGlow 2s ease infinite;
+        }
+        
+        @keyframes celebrationGlow {
+            0%, 100% { box-shadow: 0 4px 15px rgba(0,210,255,0.4); }
+            50% { box-shadow: 0 8px 25px rgba(0,210,255,0.6); }
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .hangman-section {
+                justify-content: center;
+            }
+            
+            .letter-slot {
+                width: 40px;
+                height: 40px;
+                font-size: 1.5rem;
+            }
+            
+            .keyboard {
+                grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+                gap: 5px;
+            }
+            
+            .key {
+                padding: 10px 5px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🎯 Unit 7 Hangman</h1>
+        <p style="color: #b3e5fc; font-size: 1.2rem;">Science & Technology Vocabulary</p>
+    </header>
+    
+    <main class="game-container">
+        <div class="hangman-section">
+            <div class="hangman-drawing">
+                <svg id="hangmanSvg" viewBox="0 0 250 250">
+                    <!-- Scientific Lab Equipment Theme -->
+                    <!-- Lab Bench -->
+                    <rect x="10" y="230" width="140" height="15" fill="#64b5f6" stroke="white" stroke-width="2"/>
+                    <rect x="50" y="190" width="60" height="40" fill="#64b5f6" stroke="white" stroke-width="2"/>
+                    
+                    <!-- Microscope Stand -->
+                    <rect x="125" y="20" width="4" height="60" fill="#64b5f6"/>
+                    <circle cx="127" cy="25" r="8" fill="#64b5f6"/>
+                    
+                    <!-- Body parts (scientific theme) -->
+                    <circle id="head" cx="127" cy="90" r="15" stroke="#ff6b6b" stroke-width="3" fill="none" style="display:none;"/>
+                    <circle id="eye1" cx="122" cy="87" r="2" fill="#ff6b6b" style="display:none;"/>
+                    <circle id="eye2" cx="132" cy="87" r="2" fill="#ff6b6b" style="display:none;"/>
+                    <line id="body" x1="127" y1="105" x2="127" y2="150" stroke="#ff6b6b" stroke-width="3" style="display:none;"/>
+                    <line id="leftArm" x1="127" y1="115" x2="105" y2="130" stroke="#ff6b6b" stroke-width="3" style="display:none;"/>
+                    <line id="rightArm" x1="127" y1="115" x2="149" y2="130" stroke="#ff6b6b" stroke-width="3" style="display:none;"/>
+                    <line id="leftLeg" x1="127" y1="150" x2="115" y2="180" stroke="#ff6b6b" stroke-width="3" style="display:none;"/>
+                    <line id="rightLeg" x1="127" y1="150" x2="139" y2="180" stroke="#ff6b6b" stroke-width="3" style="display:none;"/>
+                </svg>
+            </div>
+            
+            <div class="game-info">
+                <div class="category-info">
+                    <div class="category-label">Category</div>
+                    <div class="category-value" id="categoryDisplay">General Science</div>
+                </div>
+                
+                <div class="hint-section">
+                    <div class="hint-text" id="hintText">Click 'Get Hint' for help!</div>
+                </div>
+                
+                <div class="completion-celebration" id="celebrationBanner" style="display: none;">
+                    🎉 Final Unit Complete! 🎉<br>
+                    <span style="font-size: 1rem;">All Science Words Mastered!</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="word-display">
+            <div class="word-letters" id="wordLetters"></div>
+        </div>
+        
+        <div class="wrong-letters">
+            <div class="wrong-letters-display" id="wrongLettersDisplay">
+                Wrong Letters: <span id="wrongLetters"></span>
+            </div>
+        </div>
+        
+        <div class="keyboard" id="keyboard"></div>
+        
+        <div class="game-controls">
+            <button class="btn btn-primary" onclick="getHint()">💡 Get Hint</button>
+            <button class="btn btn-secondary" onclick="speakWord()">🔊 Say Word</button>
+            <button class="btn btn-secondary" onclick="newGame()">🔄 New Word</button>
+        </div>
+        
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value" id="winsCount">0</div>
+                <div class="stat-label">Wins</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="lossesCount">0</div>
+                <div class="stat-label">Losses</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="streakCount">0</div>
+                <div class="stat-label">Streak</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="remainingGuesses">6</div>
+                <div class="stat-label">Guesses Left</div>
+            </div>
+        </div>
+    </main>
+    
+    <div class="modal" id="gameModal">
+        <div class="modal-content">
+            <h2 id="modalTitle">Game Over!</h2>
+            <p id="modalMessage"></p>
+            <div class="word-reveal" id="wordReveal"></div>
+            <button class="btn btn-primary" onclick="closeModal()">Continue</button>
+        </div>
+    </div>
+    
+    <script>
+        // Unit 7 Science & Technology Vocabulary
+        const unit7Vocabulary = [
+            // Basic Science
+            { english: "science", chinese: "科学", category: "General Science", hint: "Study of natural world" },
+            { english: "technology", chinese: "技术", category: "Technology", hint: "Applied knowledge" },
+            { english: "experiment", chinese: "实验", category: "General Science", hint: "Test in lab" },
+            { english: "research", chinese: "研究", category: "General Science", hint: "Systematic investigation" },
+            { english: "discovery", chinese: "发现", category: "General Science", hint: "New finding" },
+            { english: "invention", chinese: "发明", category: "Technology", hint: "Create something new" },
+            { english: "innovation", chinese: "创新", category: "Technology", hint: "New idea or method" },
+            { english: "laboratory", chinese: "实验室", category: "General Science", hint: "Science workspace" },
+            
+            // Physics
+            { english: "physics", chinese: "物理学", category: "Physics", hint: "Study of matter and energy" },
+            { english: "energy", chinese: "能量", category: "Physics", hint: "Power to do work" },
+            { english: "electricity", chinese: "电", category: "Physics", hint: "Flow of electrons" },
+            { english: "magnet", chinese: "磁铁", category: "Physics", hint: "Attracts iron" },
+            { english: "gravity", chinese: "重力", category: "Physics", hint: "Earth's pull" },
+            { english: "force", chinese: "力", category: "Physics", hint: "Push or pull" },
+            { english: "motion", chinese: "运动", category: "Physics", hint: "Movement" },
+            { english: "wave", chinese: "波", category: "Physics", hint: "Energy transfer pattern" },
+            
+            // Chemistry
+            { english: "chemistry", chinese: "化学", category: "Chemistry", hint: "Study of substances" },
+            { english: "molecule", chinese: "分子", category: "Chemistry", hint: "Group of atoms" },
+            { english: "atom", chinese: "原子", category: "Chemistry", hint: "Smallest particle" },
+            { english: "chemical", chinese: "化学物质", category: "Chemistry", hint: "Substance with composition" },
+            { english: "reaction", chinese: "反应", category: "Chemistry", hint: "Chemical change" },
+            { english: "solution", chinese: "溶液", category: "Chemistry", hint: "Mixed liquid" },
+            { english: "element", chinese: "元素", category: "Chemistry", hint: "Pure substance" },
+            { english: "compound", chinese: "化合物", category: "Chemistry", hint: "Two or more elements" },
+            
+            // Biology
+            { english: "biology", chinese: "生物学", category: "Biology", hint: "Study of life" },
+            { english: "cell", chinese: "细胞", category: "Biology", hint: "Basic unit of life" },
+            { english: "DNA", chinese: "DNA", category: "Biology", hint: "Genetic material" },
+            { english: "evolution", chinese: "进化", category: "Biology", hint: "Species change over time" },
+            { english: "organism", chinese: "生物", category: "Biology", hint: "Living thing" },
+            { english: "ecosystem", chinese: "生态系统", category: "Biology", hint: "Community of organisms" },
+            { english: "genetics", chinese: "遗传学", category: "Biology", hint: "Study of inheritance" },
+            { english: "species", chinese: "物种", category: "Biology", hint: "Type of organism" },
+            
+            // Technology & Computing
+            { english: "computer", chinese: "计算机", category: "Technology", hint: "Electronic device for processing data" },
+            { english: "software", chinese: "软件", category: "Technology", hint: "Computer programs" },
+            { english: "hardware", chinese: "硬件", category: "Technology", hint: "Physical computer parts" },
+            { english: "internet", chinese: "互联网", category: "Technology", hint: "Global network" },
+            { english: "digital", chinese: "数字的", category: "Technology", hint: "Using numbers/0s and 1s" },
+            { english: "data", chinese: "数据", category: "Technology", hint: "Information" },
+            { english: "algorithm", chinese: "算法", category: "Technology", hint: "Step-by-step procedure" },
+            { english: "programming", chinese: "编程", category: "Technology", hint: "Writing computer code" },
+            
+            // Space & Astronomy
+            { english: "space", chinese: "太空", category: "Space Science", hint: "Beyond Earth's atmosphere" },
+            { english: "planet", chinese: "行星", category: "Space Science", hint: "Orbits a star" },
+            { english: "star", chinese: "星星", category: "Space Science", hint: "Luminous celestial body" },
+            { english: "galaxy", chinese: "星系", category: "Space Science", hint: "System of stars" },
+            { english: "astronaut", chinese: "宇航员", category: "Space Science", hint: "Space traveler" },
+            { english: "telescope", chinese: "望远镜", category: "Space Science", hint: "Device for viewing distant objects" },
+            { english: "satellite", chinese: "卫星", category: "Space Science", hint: "Orbits a planet" },
+            { english: "rocket", chinese: "火箭", category: "Space Science", hint: "Space vehicle" },
+            
+            // General Terms
+            { english: "theory", chinese: "理论", category: "General Science", hint: "Scientific explanation" },
+            { english: "hypothesis", chinese: "假设", category: "General Science", hint: "Testable prediction" },
+            { english: "evidence", chinese: "证据", category: "General Science", hint: "Proof or support" },
+            { english: "method", chinese: "方法", category: "General Science", hint: "Way of doing something" },
+            { english: "result", chinese: "结果", category: "General Science", hint: "Outcome of experiment" },
+            { english: "conclusion", chinese: "结论", category: "General Science", hint: "Final judgment" },
+            { english: "observation", chinese: "观察", category: "General Science", hint: "Careful watching" },
+            { english: "measurement", chinese: "测量", category: "General Science", hint: "Finding size/amount" },
+            { english: "analysis", chinese: "分析", category: "General Science", hint: "Detailed examination" }
+        ];
+        
+        let currentWord = null;
+        let guessedLetters = [];
+        let wrongLetters = [];
+        let wins = 0;
+        let losses = 0;
+        let streak = 0;
+        let remainingGuesses = 6;
+        let hintUsed = false;
+        let gamesCompleted = 0;
+        
+        const bodyParts = ['head', 'eye1', 'eye2', 'body', 'leftArm', 'rightArm', 'leftLeg', 'rightLeg'];
+        
+        function initGame() {
+            createKeyboard();
+            loadStats();
+            newGame();
+        }
+        
+        function createKeyboard() {
+            const keyboard = document.getElementById('keyboard');
+            const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+            
+            letters.forEach(letter => {
+                const key = document.createElement('button');
+                key.className = 'key';
+                key.textContent = letter;
+                key.onclick = () => guessLetter(letter);
+                key.id = `key-${letter}`;
+                keyboard.appendChild(key);
+            });
+        }
+        
+        function newGame() {
+            // Reset game state
+            currentWord = unit7Vocabulary[Math.floor(Math.random() * unit7Vocabulary.length)];
+            guessedLetters = [];
+            wrongLetters = [];
+            remainingGuesses = 6;
+            hintUsed = false;
+            
+            // Reset UI
+            document.getElementById('wrongLetters').textContent = '';
+            document.getElementById('hintText').textContent = 'Click "Get Hint" for help!';
+            document.getElementById('categoryDisplay').textContent = currentWord.category;
+            document.getElementById('remainingGuesses').textContent = remainingGuesses;
+            
+            // Reset hangman drawing
+            bodyParts.forEach(part => {
+                document.getElementById(part).style.display = 'none';
+            });
+            
+            // Reset keyboard
+            document.querySelectorAll('.key').forEach(key => {
+                key.disabled = false;
+                key.classList.remove('correct', 'wrong');
+            });
+            
+            // Update word display
+            updateWordDisplay();
+        }
+        
+        function updateWordDisplay() {
+            const wordLetters = document.getElementById('wordLetters');
+            wordLetters.innerHTML = '';
+            
+            currentWord.english.split('').forEach(letter => {
+                const slot = document.createElement('div');
+                slot.className = 'letter-slot';
+                
+                if (guessedLetters.includes(letter)) {
+                    slot.textContent = letter;
+                    slot.classList.add('filled');
+                } else {
+                    slot.textContent = '';
+                }
+                
+                wordLetters.appendChild(slot);
+            });
+        }
+        
+        function guessLetter(letter) {
+            if (guessedLetters.includes(letter) || wrongLetters.includes(letter)) {
+                return;
+            }
+            
+            const key = document.getElementById(`key-${letter}`);
+            key.disabled = true;
+            
+            if (currentWord.english.toUpperCase().includes(letter)) {
+                guessedLetters.push(letter);
+                key.classList.add('correct');
+                updateWordDisplay();
+                
+                // Check win
+                if (currentWord.english.split('').every(l => guessedLetters.includes(l))) {
+                    endGame(true);
+                }
+            } else {
+                wrongLetters.push(letter);
+                key.classList.add('wrong');
+                remainingGuesses--;
+                
+                // Update wrong letters display
+                document.getElementById('wrongLetters').textContent = wrongLetters.join(' ');
+                
+                // Update hangman drawing
+                const bodyPartIndex = 8 - remainingGuesses - 1;
+                if (bodyPartIndex >= 0 && bodyPartIndex < bodyParts.length) {
+                    document.getElementById(bodyParts[bodyPartIndex]).style.display = 'block';
+                }
+                
+                // Update remaining guesses
+                document.getElementById('remainingGuesses').textContent = remainingGuesses;
+                
+                // Check loss
+                if (remainingGuesses === 0) {
+                    endGame(false);
+                }
+            }
+        }
+        
+        function getHint() {
+            if (!hintUsed && currentWord.hint) {
+                hintUsed = true;
+                document.getElementById('hintText').textContent = `Hint: ${currentWord.hint}`;
+                
+                // Slight penalty for using hint
+                if (remainingGuesses > 1) {
+                    remainingGuesses--;
+                    document.getElementById('remainingGuesses').textContent = remainingGuesses;
+                }
+            }
+        }
+        
+        function speakWord() {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(currentWord.english);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.8;
+                speechSynthesis.speak(utterance);
+            }
+        }
+        
+        function endGame(won) {
+            gamesCompleted++;
+            
+            if (won) {
+                wins++;
+                streak++;
+                showGameModal(true, `Great job! You mastered "${currentWord.english}"!`);
+                
+                // Show celebration banner after 5 wins
+                if (wins >= 5) {
+                    document.getElementById('celebrationBanner').style.display = 'block';
+                }
+            } else {
+                losses++;
+                streak = 0;
+                showGameModal(false, `Game over! The scientific term was:`);
+            }
+            
+            updateStats();
+            saveStats();
+        }
+        
+        function showGameModal(won, message) {
+            const modal = document.getElementById('gameModal');
+            const title = document.getElementById('modalTitle');
+            const modalMessage = document.getElementById('modalMessage');
+            const wordReveal = document.getElementById('wordReveal');
+            
+            if (won) {
+                title.innerHTML = '<span class="win-text">🎉 Science Master!</span>';
+                title.className = 'win-text';
+            } else {
+                title.innerHTML = '<span class="lose-text">🔬 Study More!</span>';
+                title.className = 'lose-text';
+            }
+            
+            modalMessage.textContent = message;
+            wordReveal.innerHTML = `
+                <div><strong>${currentWord.english}</strong></div>
+                <div style="font-size: 1.2rem; color: #b3e5fc; margin-top: 10px;">${currentWord.chinese}</div>
+                <div style="font-size: 1rem; color: #64b5f6; margin-top: 5px;">${currentWord.category}</div>
+            `;
+            
+            modal.style.display = 'flex';
+        }
+        
+        function closeModal() {
+            document.getElementById('gameModal').style.display = 'none';
+            newGame();
+        }
+        
+        function updateStats() {
+            document.getElementById('winsCount').textContent = wins;
+            document.getElementById('lossesCount').textContent = losses;
+            document.getElementById('streakCount').textContent = streak;
+        }
+        
+        function saveStats() {
+            localStorage.setItem('hangmanStatsUnit7', JSON.stringify({
+                wins: wins,
+                losses: losses,
+                streak: streak,
+                gamesCompleted: gamesCompleted
+            }));
+        }
+        
+        function loadStats() {
+            const stats = localStorage.getItem('hangmanStatsUnit7');
+            if (stats) {
+                const parsed = JSON.parse(stats);
+                wins = parsed.wins || 0;
+                losses = parsed.losses || 0;
+                streak = parsed.streak || 0;
+                gamesCompleted = parsed.gamesCompleted || 0;
+                updateStats();
+            }
+        }
+        
+        // Keyboard support
+        document.addEventListener('keydown', function(e) {
+            if (e.key.match(/^[a-zA-Z]$/)) {
+                guessLetter(e.key.toUpperCase());
+            }
+        });
+        
+        // Initialize game when page loads
+        document.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>

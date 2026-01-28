@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit 4 Master - Food & Health Games</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Fredoka', cursive;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .game-container {
+            background: white;
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            max-width: 1400px;
+            width: 100%;
+        }
+        
+        .progress-bar {
+            background: #e0e0e0;
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            height: 100%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .game-modes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .game-mode-card {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .game-mode-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: rotate(45deg);
+            transition: all 0.6s;
+            opacity: 0;
+        }
+        
+        .game-mode-card:hover::before {
+            animation: shimmer 0.6s ease;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); opacity: 0; }
+        }
+        
+        .game-mode-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 20px 50px rgba(255,107,107,0.4);
+            border-color: #ffd700;
+        }
+        
+        .game-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+        
+        .game-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .game-subtitle {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+        
+        .game-description {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            line-height: 1.4;
+        }
+        
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+        
+        .stats-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border: 3px solid #e0e0e0;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #ff6b6b;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            color: #666;
+        }
+        
+        .message {
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+        
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+        
+        .message.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 2px solid #bee5eb;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .game-modes {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="location.href='index.html'">← Back to Units</button>
+    
+    <header>
+        <h1>🍽️ Unit 4 Master</h1>
+        <p>Food & Health Vocabulary Games<br><span style="font-size: 1.2rem;">食物与健康词汇游戏</span></p>
+    </header>
+    
+    <main class="game-container">
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill" style="width: 57%">
+                57% Complete
+            </div>
+        </div>
+        
+        <div class="stats-panel">
+            <div class="stat-item">
+                <div class="stat-value" id="total-score">0</div>
+                <div class="stat-label">Total Score<br><span style="font-size: 0.8rem;">总分</span></div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="games-played">0</div>
+                <div class="stat-label">Games Played<br><span style="font-size: 0.8rem;">游戏次数</span></div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="best-score">0</div>
+                <div class="stat-label">Best Score<br><span style="font-size: 0.8rem;">最高分</span></div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="accuracy">0%</div>
+                <div class="stat-label">Accuracy<br><span style="font-size: 0.8rem;">准确率</span></div>
+            </div>
+        </div>
+        
+        <div id="message"></div>
+        
+        <div class="game-modes">
+            <div class="game-mode-card" onclick="location.href='unit4-hangman.html'">
+                <div class="game-icon">🎯</div>
+                <div class="game-title">Hangman<br><span style="font-size: 1rem;">猜字游戏</span></div>
+                <div class="game-subtitle">Food & Health Edition<br><span style="font-size: 0.8rem;">食物健康版</span></div>
+                <div class="game-description">
+                    Guess the food/health word letter by letter!<br>
+                    <span style="font-size: 0.8rem;">逐字母猜食物健康单词！</span>
+                </div>
+            </div>
+            
+            <div class="game-mode-card" onclick="location.href='unit4-charades.html'">
+                <div class="game-icon">🎭</div>
+                <div class="game-title">Charades<br><span style="font-size: 1rem;">比手画脚</span></div>
+                <div class="game-subtitle">Restaurant Acting Game<br><span style="font-size: 0.8rem;">餐厅表演游戏</span></div>
+                <div class="game-description">
+                    Act out food items without speaking!<br>
+                    <span style="font-size: 0.8rem;">不说话表演食物！</span>
+                </div>
+            </div>
+            
+            <div class="game-mode-card" onclick="location.href='unit4-pictionary.html'">
+                <div class="game-icon">🎨</div>
+                <div class="game-title">Pictionary<br><span style="font-size: 1rem;">你画我猜</span></div>
+                <div class="game-subtitle">Food Drawing Challenge<br><span style="font-size: 0.8rem;">食物绘画挑战</span></div>
+                <div class="game-description">
+                    Draw food items for teammates to guess!<br>
+                    <span style="font-size: 0.8rem;">画食物让队友猜！</span>
+                </div>
+            </div>
+            
+            <div class="game-mode-card" onclick="location.href='unit4-bingo.html'">
+                <div class="game-icon">🎪</div>
+                <div class="game-title">Vocabulary Bingo<br><span style="font-size: 1rem;">词汇宾果</span></div>
+                <div class="game-subtitle">Food Menu Bingo<br><span style="font-size: 0.8rem;">菜单宾果</span></div>
+                <div class="game-description">
+                    Listen to food words and mark your card!<br>
+                    <span style="font-size: 0.8rem;">听食物单词标记卡片！</span>
+                </div>
+            </div>
+            
+            <div class="game-mode-card" onclick="location.href='unit4-memory.html'">
+                <div class="game-icon">🧠</div>
+                <div class="game-title">Memory Game<br><span style="font-size: 1rem;">记忆配对翻牌</span></div>
+                <div class="game-subtitle">Food Pair Matching<br><span style="font-size: 0.8rem;">食物配对</span></div>
+                <div class="game-description">
+                    Match food items with their names/pictures!<br>
+                    <span style="font-size: 0.8rem;">食物与名称/图片配对！</span>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        // Unit 4 vocabulary data
+        const unit4Vocabulary = {
+            core: [
+                { word: 'tea', chinese: '茶；茶叶', phonetic: '/tiː/', type: 'n.' },
+                { word: 'bread', chinese: '面包', phonetic: '/bred/', type: 'n.' },
+                { word: 'ice cream', chinese: '冰激凌', phonetic: '/aɪs kriːm/', type: 'n.' },
+                { word: 'vegetable', chinese: '蔬菜', phonetic: '/ˈvedʒtəbl/', type: 'n.' },
+                { word: 'soup', chinese: '汤', phonetic: '/suːp/', type: 'n.' },
+                { word: 'rice', chinese: '米饭；大米', phonetic: '/raɪs/', type: 'n.' },
+                { word: 'cup', chinese: '杯子', phonetic: '/kʌp/', type: 'n.' },
+                { word: 'banana', chinese: '香蕉', phonetic: '/bəˈnɑːnə/', type: 'n.' },
+                { word: 'hungry', chinese: '饥饿的', phonetic: '/ˈhʌŋɡri/', type: 'adj.' },
+                { word: 'doctor', chinese: '医生', phonetic: '/ˈdɒktə(r)/', type: 'n.' },
+                { word: 'young', chinese: '年轻的', phonetic: '/jʌŋ/', type: 'adj.' },
+                { word: 'watermelon', chinese: '西瓜', phonetic: '/ˈwɔːtəˌmelən/', type: 'n.' },
+                { word: 'cabbage', chinese: '卷心菜', phonetic: '/ˈkæbɪdʒ/', type: 'n.' },
+                { word: 'mutton', chinese: '羊肉', phonetic: '/ˈmʌtn/', type: 'n.' },
+                { word: 'cookie', chinese: '曲奇饼', phonetic: '/ˈkʊki/', type: 'n.' },
+                { word: 'onion', chinese: '洋葱；葱头', phonetic: '/ˈʌnjən/', type: 'n.' },
+                { word: 'dumpling', chinese: '饺子', phonetic: '/ˈdʌmplɪŋ/', type: 'n.' },
+                { word: 'coffee', chinese: '咖啡', phonetic: '/ˈkɒfi/', type: 'n.' },
+                { word: 'bean', chinese: '豆', phonetic: '/biːn/', type: 'n.' },
+                { word: 'chip', chinese: '薯条', phonetic: '/tʃɪp/', type: 'n.' },
+                { word: 'fish', chinese: '鱼', phonetic: '/fɪʃ/', type: 'n.' },
+                { word: 'chips', chinese: '薯条', phonetic: '/tʃɪps/', type: 'n.' },
+                { word: 'salad', chinese: '沙拉', phonetic: '/ˈsæləd/', type: 'n.' },
+                { word: 'porridge', chinese: '粥；麦片粥', phonetic: '/ˈpɒrɪdʒ/', type: 'n.' },
+                { word: 'waiter', chinese: '服务员', phonetic: '/ˈweɪtə(r)/', type: 'n.' },
+                { word: 'sir', chinese: '先生', phonetic: '/sɜː(r)/', type: 'n.' },
+                { word: 'go with', chinese: '搭配；相配', phonetic: '', type: 'phrase' },
+                { word: 'What about', chinese: '……怎么样', phonetic: '/wɒt əˈbaʊt/', type: 'phrase' },
+                { word: 'taste', chinese: '有……味道；尝', phonetic: '/teɪst/', type: 'v./n.' },
+                { word: 'anything', chinese: '任何事物', phonetic: '/ˈeniθɪŋ/', type: 'pron.' },
+                { word: 'dish', chinese: '一道菜；盘子', phonetic: '/dɪʃ/', type: 'n.' },
+                { word: 'choice', chinese: '选择', phonetic: '/tʃɔɪs/', type: 'n.' },
+                { word: 'meal', chinese: '一餐', phonetic: '/miːl/', type: 'n.' },
+                { word: 'pork', chinese: '猪肉', phonetic: '/pɔːk/', type: 'n.' },
+                { word: 'strawberry', chinese: '草莓', phonetic: '/ˈstrɔːberi/', type: 'n.' },
+                { word: 'menu', chinese: '菜单', phonetic: '/ˈmenjuː/', type: 'n.' },
+                { word: 'customer', chinese: '顾客', phonetic: '/ˈkʌstəmə(r)/', type: 'n.' },
+                { word: 'serve', chinese: '提供；服务', phonetic: '/sɜːv/', type: 'v.' },
+                { word: 'waitress', chinese: '女服务员', phonetic: '/ˈweɪtrəs/', type: 'n.' },
+                { word: 'first', chinese: '先', phonetic: '/fɜːst/', type: 'n./adj./adv.' },
+                { word: 'instead', chinese: '反而；代替', phonetic: '/ɪnˈsted/', type: 'adv.' },
+                { word: 'pear', chinese: '梨', phonetic: '/peə(r)/', type: 'n.' },
+                { word: 'too much', chinese: '太多', phonetic: '', type: 'phrase' },
+                { word: 'sugar', chinese: '糖', phonetic: '/ˈʃʊɡə(r)/', type: 'n.' },
+                { word: 'improve', chinese: '改进；改善', phonetic: '/ɪmˈpruːv/', type: 'v.' },
+                { word: 'habit', chinese: '习惯', phonetic: '/ˈhæbɪt/', type: 'n.' },
+                { word: 'fast food', chinese: '快餐', phonetic: '/fɑːst fuːd/', type: 'n.' },
+                { word: 'salt', chinese: '盐', phonetic: '/sɔːlt; sɒlt/', type: 'n.' },
+                { word: 'fat', chinese: '脂肪；adj. 肥胖的', phonetic: '/fæt/', type: 'n./adj.' },
+                { word: 'put on', chinese: '增加；穿上', phonetic: '', type: 'phrase' },
+                { word: 'weight', chinese: '体重；重量', phonetic: '/weɪt/', type: 'n.' },
+                { word: 'hamburger', chinese: '汉堡包', phonetic: '/ˈhæmbɜːɡə(r)/', type: 'n.' },
+                { word: 'cause', chinese: '造成；导致', phonetic: '/kɔːz/', type: 'v./n.' },
+                { word: 'heart', chinese: '心脏；中心', phonetic: '/hɑːt/', type: 'n.' },
+                { word: 'balanced', chinese: '均衡的；平衡的', phonetic: '/ˈbælənst/', type: 'adj.' },
+                { word: 'too ... to', chinese: '太……以至于不能', phonetic: '', type: 'phrase' },
+                { word: 'sleepy', chinese: '困倦的；想睡的', phonetic: '/ˈsliːpi/', type: 'adj.' },
+                { word: 'after all', chinese: '毕竟；终究', phonetic: '', type: 'phrase' },
+                { word: 'away', chinese: '离开；在别处', phonetic: '/əˈweɪ/', type: 'adv.' },
+                { word: 'poor', chinese: '不好的；贫穷的', phonetic: '/pɔː(r); pʊər)/', type: 'adj.' },
+                { word: 'result', chinese: '结果；后果', phonetic: '/rɪˈzʌlt/', type: 'n.' },
+                { word: 'article', chinese: '文章；冠词', phonetic: '/ˈɑːtɪkl/', type: 'n.' },
+                { word: 'common', chinese: '共同的；普遍的', phonetic: '/ˈkɒmən/', type: 'adj.' },
+                { word: 'among', chinese: '在……之中', phonetic: '/əˈmʌŋ/', type: 'prep.' },
+                { word: 'soft', chinese: '柔软的', phonetic: '/sɒft/', type: 'adj.' },
+                { word: 'soft drink', chinese: '软饮料', phonetic: '/sɒft drɪŋk/', type: 'n.' },
+                { word: 'enough', chinese: '足够的；充分的', phonetic: '/ɪˈnʌf/', type: 'adj./adv.' },
+                { word: 'thirty', chinese: '三十', phonetic: '/ˈθɜːti/', type: 'n./adj.' },
+                { word: 'Gongbao chicken', chinese: '宫保鸡', phonetic: '', type: 'phrase' },
+                { word: 'Dongpo pork', chinese: '东坡肉', phonetic: '', type: 'phrase' },
+                { word: 'America', chinese: '美国；美洲', phonetic: '/əˈmerɪkə/', type: 'n.' }
+            ]
+        };
+        
+        // Save vocabulary data to localStorage for other games to use
+        localStorage.setItem('unit4-vocabulary', JSON.stringify(unit4Vocabulary));
+        
+        // Initialize stats
+        let totalScore = 0;
+        let gamesPlayed = 0;
+        let bestScore = 0;
+        let totalAttempts = 0;
+        let correctAnswers = 0;
+        
+        // Load saved stats
+        function loadStats() {
+            const saved = localStorage.getItem('unit4-stats');
+            if (saved) {
+                const stats = JSON.parse(saved);
+                totalScore = stats.totalScore || 0;
+                gamesPlayed = stats.gamesPlayed || 0;
+                bestScore = stats.bestScore || 0;
+                totalAttempts = stats.totalAttempts || 0;
+                correctAnswers = stats.correctAnswers || 0;
+            }
+            updateStats();
+        }
+        
+        // Update stats display
+        function updateStats() {
+            document.getElementById('total-score').textContent = totalScore;
+            document.getElementById('games-played').textContent = gamesPlayed;
+            document.getElementById('best-score').textContent = bestScore;
+            
+            const accuracy = totalAttempts > 0 ? Math.round((correctAnswers / totalAttempts) * 100) : 0;
+            document.getElementById('accuracy').textContent = accuracy + '%';
+            
+            // Update progress
+            const progressPercent = Math.min(100, (gamesPlayed / 4) * 100); // 4 games total
+            const progressFill = document.getElementById('progress-fill');
+            progressFill.style.width = progressPercent + '%';
+            progressFill.textContent = Math.round(progressPercent) + '% Complete';
+        }
+        
+        // Show message
+        function showMessage(text, type) {
+            const messageContainer = document.getElementById('message');
+            messageContainer.innerHTML = `<div class="message ${type}">${text}</div>`;
+            
+            setTimeout(() => {
+                messageContainer.innerHTML = '';
+            }, 3000);
+        }
+        
+        // Initialize on load
+        window.onload = function() {
+            loadStats();
+            showMessage('🍽️ Welcome to Unit 4! Choose a game to start learning about food and health!', 'info');
+        };
+    </script>
+</body>
+</html>

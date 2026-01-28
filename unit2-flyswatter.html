@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fly Swatter Game - Unit 2 Vocabulary</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Fredoka', cursive;
+            background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .game-container {
+            background: white;
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            max-width: 1400px;
+            width: 100%;
+        }
+        
+        .score-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .team-score {
+            background: #f8f9fa;
+            border: 3px solid #e0e0e0;
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .team-score.active {
+            border-color: #4CAF50;
+            background: #e8f5e8;
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(76,175,80,0.3);
+        }
+        
+        .team-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .team-points {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #4CAF50;
+            margin-bottom: 10px;
+        }
+        
+        .team-members {
+            font-size: 1rem;
+            color: #666;
+        }
+        
+        .game-board {
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            min-height: 500px;
+            position: relative;
+        }
+        
+        .word-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .word-card {
+            background: white;
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        
+        .word-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border-color: #667eea;
+        }
+        
+        .word-card.hit {
+            background: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+            transform: scale(0.95);
+            animation: hitPulse 0.6s ease;
+        }
+        
+        .word-card.wrong {
+            background: #f44336;
+            color: white;
+            border-color: #f44336;
+            animation: wrongShake 0.6s ease;
+        }
+        
+        @keyframes hitPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(0.95); }
+        }
+        
+        @keyframes wrongShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        .word-english {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+        
+        .word-chinese {
+            font-size: 1rem;
+            color: #666;
+            font-weight: 400;
+        }
+        
+        .word-card.hit .word-chinese,
+        .word-card.wrong .word-chinese {
+            color: rgba(255,255,255,0.9);
+        }
+        
+        .current-word-display {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(255,107,107,0.4);
+        }
+        
+        .current-word {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .current-definition {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(102,126,234,0.6);
+        }
+        
+        .btn.success {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+        }
+        
+        .btn.warning {
+            background: linear-gradient(45deg, #ff9800, #f57c00);
+        }
+        
+        .btn.danger {
+            background: linear-gradient(45deg, #f44336, #da190b);
+        }
+        
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: scale(1);
+        }
+        
+        .fly-swatter {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            pointer-events: none;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .fly-swatter.active {
+            display: block;
+            cursor: crosshair !important;
+            pointer-events: all;
+        }
+        
+        .swatter-handle {
+            position: absolute;
+            width: 8px;
+            height: 60px;
+            background: linear-gradient(45deg, #8b4513, #a0522d);
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 4px;
+        }
+        
+        .swatter-head {
+            position: absolute;
+            width: 60px;
+            height: 40px;
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            border: 3px solid #333;
+            border-radius: 10px;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .swatter-grid {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 10px;
+            padding: 10px;
+            display: none;
+        }
+        
+        .grid-line-h, .grid-line-v {
+            position: absolute;
+            background: rgba(102,126,234,0.3);
+            pointer-events: none;
+        }
+        
+        .grid-line-h {
+            width: 100%;
+            height: 2px;
+        }
+        
+        .grid-line-v {
+            width: 2px;
+            height: 100%;
+        }
+        
+        .timer-section {
+            background: #e3f2fd;
+            border: 3px solid #2196f3;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .timer-display {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+        
+        .game-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .message {
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+        
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+        
+        .message.warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 2px solid #ffeaa7;
+        }
+        
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+        
+        .difficulty-selector {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .difficulty-btn {
+            background: #e0e0e0;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .difficulty-btn.active {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        .instructions {
+            background: #e8f5e8;
+            border: 2px solid #4CAF50;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .instructions h3 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .instructions ul {
+            color: #2e7d32;
+            font-size: 1rem;
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .word-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .current-word {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="location.href='unit2-master.html'">← Back to Unit 2</button>
+    
+    <header>
+        <h1>🪰 Fly Swatter Game</h1>
+        <p>Slap the correct word with your fly swatter!<br><span style="font-size: 1.2rem;">苍蝇拍抢答游戏</span></p>
+    </header>
+    
+    <main class="game-container">
+        <div class="game-stats">
+            <div class="stat-item">
+                <div class="stat-value" id="round-number">1</div>
+                <div class="stat-label">Round<br><span style="font-size: 0.8rem;">回合</span></div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="words-hit">0</div>
+                <div class="stat-label">Words Hit<br><span style="font-size: 0.8rem;">击中词数</span></div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="accuracy">0%</div>
+                <div class="stat-label">Accuracy<br><span style="font-size: 0.8rem;">准确率</span></div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="game-time">0:00</div>
+                <div class="stat-label">Time<br><span style="font-size: 0.8rem;">时间</span></div>
+            </div>
+        </div>
+        
+        <div id="message"></div>
+        
+        <div class="difficulty-selector">
+            <button class="difficulty-btn active" onclick="setDifficulty('easy')">Easy / 简单</button>
+            <button class="difficulty-btn" onclick="setDifficulty('medium')">Medium / 中等</button>
+            <button class="difficulty-btn" onclick="setDifficulty('hard')">Hard / 困难</button>
+        </div>
+        
+        <div class="score-panel">
+            <div class="team-score active" id="team1-panel">
+                <div class="team-name">🏠 Team 1<br><span style="font-size: 0.9rem;">1队</span></div>
+                <div class="team-points" id="team1-points">0</div>
+                <div class="team-members" id="team1-members">Players: 1,2</div>
+            </div>
+            
+            <div class="team-score" id="team2-panel">
+                <div class="team-name">🏢 Team 2<br><span style="font-size: 0.9rem;">2队</span></div>
+                <div class="team-points" id="team2-points">0</div>
+                <div class="team-members" id="team2-members">Players: 3,4</div>
+            </div>
+        </div>
+        
+        <div class="current-word-display">
+            <div class="current-word" id="current-word">Click "Start Game" to begin!</div>
+            <div class="current-definition" id="current-definition">点击"开始游戏"开始！</div>
+        </div>
+        
+        <div class="timer-section">
+            <div class="timer-display" id="timer">⏱️ Ready</div>
+        </div>
+        
+        <div class="game-board" id="game-board">
+            <div class="word-grid" id="word-grid">
+                <!-- Word cards will be generated here -->
+            </div>
+            
+            <div class="fly-swatter" id="fly-swatter">
+                <div class="swatter-head"></div>
+                <div class="swatter-handle"></div>
+            </div>
+            
+            <div class="swatter-grid" id="swatter-grid">
+                <!-- Grid lines will be added here -->
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn" id="start-btn" onclick="startGame()">
+                ▶️ Start Game<br><span style="font-size: 0.9rem;">开始游戏</span>
+            </button>
+            <button class="btn success" id="team1-btn" onclick="awardPoint(1)" disabled>
+                🏠 Team 1 Point<br><span style="font-size: 0.9rem;">1队得分</span>
+            </button>
+            <button class="btn success" id="team2-btn" onclick="awardPoint(2)" disabled>
+                🏢 Team 2 Point<br><span style="font-size: 0.9rem;">2队得分</span>
+            </button>
+            <button class="btn warning" onclick="nextRound()">
+                ⏭️ Next Round<br><span style="font-size: 0.9rem;">下一回合</span>
+            </button>
+            <button class="btn danger" onclick="resetGame()">
+                🔄 Reset Game<br><span style="font-size: 0.9rem;">重置游戏</span>
+            </button>
+        </div>
+        
+        <div class="instructions">
+            <h3>📋 Game Rules / 游戏规则</h3>
+            <ul>
+                <li>Listen to the definition and slap the correct word<br>听定义，拍打正确的单词</li>
+                <li>First team to slap gets the point<br>最先拍到的队伍得分</li>
+                <li>Teacher reads the definition<br>老师读出单词定义</li>
+                <li>Use fly swatter or hand to slap<br>用苍蝇拍或手拍打</li>
+                <li>Wrong slap = no point<br>拍错不得分</li>
+            </ul>
+        </div>
+    </main>
+    
+    <script>
+        // Load vocabulary from localStorage
+        const vocabulary = JSON.parse(localStorage.getItem('unit2-vocabulary'));
+        if (!vocabulary) {
+            alert('Please load unit2-master.html first!');
+            location.href = 'unit2-master.html';
+        }
+        
+        // Game state
+        let currentDifficulty = 'easy';
+        let currentWord = null;
+        let currentTeam = 1;
+        let team1Score = 0;
+        let team2Score = 0;
+        let roundNumber = 1;
+        let wordsHit = 0;
+        let totalSwats = 0;
+        let gameActive = false;
+        let startTime = null;
+        let gameTimer = null;
+        let currentWords = [];
+        let usedWords = [];
+        
+        function setDifficulty(difficulty) {
+            currentDifficulty = difficulty;
+            
+            // Update button states
+            document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            if (!gameActive) {
+                generateWordGrid();
+            }
+        }
+        
+        function generateWordGrid() {
+            const grid = document.getElementById('word-grid');
+            grid.innerHTML = '';
+            
+            let wordCount;
+            let wordList;
+            
+            switch (currentDifficulty) {
+                case 'easy':
+                    wordCount = 6;
+                    wordList = vocabulary.core.slice(0, 12); // Use simpler words
+                    break;
+                case 'medium':
+                    wordCount = 9;
+                    wordList = vocabulary.core.slice(0, 18);
+                    break;
+                case 'hard':
+                    wordCount = 12;
+                    wordList = vocabulary.core;
+                    break;
+            }
+            
+            // Select random words (ensure current word is included)
+            const availableWords = wordList.filter(w => !usedWords.includes(w.word));
+            const selectedWords = [];
+            
+            // Include current word if it exists
+            if (currentWord && !selectedWords.find(w => w.word === currentWord.word)) {
+                selectedWords.push(currentWord);
+            }
+            
+            // Fill with random words
+            while (selectedWords.length < wordCount && availableWords.length > 0) {
+                const randomIndex = Math.floor(Math.random() * availableWords.length);
+                const word = availableWords.splice(randomIndex, 1)[0];
+                if (!selectedWords.find(w => w.word === word.word)) {
+                    selectedWords.push(word);
+                }
+            }
+            
+            currentWords = selectedWords;
+            
+            // Shuffle and create cards
+            selectedWords.sort(() => Math.random() - 0.5);
+            
+            selectedWords.forEach(word => {
+                const card = document.createElement('div');
+                card.className = 'word-card';
+                card.dataset.word = word.word;
+                card.innerHTML = `
+                    <div class="word-english">${word.word}</div>
+                    <div class="word-chinese">${word.chinese}</div>
+                `;
+                
+                card.addEventListener('click', function() {
+                    if (gameActive) {
+                        swatWord(this, word.word);
+                    }
+                });
+                
+                grid.appendChild(card);
+            });
+        }
+        
+        function startGame() {
+            // Select random word from vocabulary
+            const availableWords = vocabulary.core.filter(w => !usedWords.includes(w.word));
+            
+            if (availableWords.length === 0) {
+                showMessage('🎉 All words used! Game Over!', 'success');
+                endGame();
+                return;
+            }
+            
+            currentWord = availableWords[Math.floor(Math.random()) * availableWords.length];
+            gameActive = true;
+            startTime = Date.now();
+            wordsHit = 0;
+            totalSwats = 0;
+            
+            // Update display
+            document.getElementById('current-word').textContent = 'Listen carefully!';
+            document.getElementById('current-definition').textContent = '仔细听！';
+            
+            // Generate word grid with current word
+            generateWordGrid();
+            
+            // Enable buttons
+            document.getElementById('start-btn').disabled = true;
+            document.getElementById('team1-btn').disabled = false;
+            document.getElementById('team2-btn').disabled = false;
+            
+            // Start timer
+            startGameTimer();
+            
+            // Show fly swatter
+            const swatter = document.getElementById('fly-swatter');
+            swatter.classList.add('active');
+            
+            showMessage(`🎮 Round ${roundNumber} started! Listen for the word definition.`, 'info');
+            
+            // Speak the definition (if supported)
+            setTimeout(() => {
+                speakDefinition();
+            }, 1000);
+        }
+        
+        function speakDefinition() {
+            if (!currentWord) return;
+            
+            const definition = createDefinition(currentWord);
+            document.getElementById('current-word').textContent = 'Find this word:';
+            document.getElementById('current-definition').textContent = definition;
+            
+            // Use speech synthesis if available
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(definition);
+                utterance.rate = 0.9;
+                utterance.pitch = 1.1;
+                speechSynthesis.speak(utterance);
+            }
+        }
+        
+        function createDefinition(word) {
+            // Create simple definitions for the words
+            const definitions = {
+                'rule': 'Something you must follow at school',
+                'order': 'When things are in the right place',
+                'follow': 'To go behind someone or do what they say',
+                'late': 'Not on time, after the correct time',
+                'phone': 'Device you use to call people',
+                'arrive': 'To get to a place',
+                'on time': 'Exactly at the right time',
+                'hallway': 'Long passage in a school or building',
+                'uniform': 'Special clothes students wear to school',
+                'litter': 'Trash or garbage, to make a place messy',
+                'polite': 'Having good manners, being nice to others',
+                'treat': 'To behave in a certain way toward someone',
+                'respect': 'To admire or think highly of someone',
+                'jacket': 'A piece of clothing for your upper body',
+                'have to': 'Must do something, no choice',
+                'everything': 'All things, all stuff',
+                'lend': 'To give something to someone temporarily',
+                'sweet': 'Sugar candy, or having a good taste',
+                'snack': 'Small amount of food between meals',
+                'of course': 'Certainly, yes, definitely',
+                'mobile': 'Able to move around',
+                'turn off': 'To stop something from working',
+                'queue': 'Line of people waiting',
+                'feed': 'To give food to animals or people',
+                'leave': 'To go away from a place',
+                'absent': 'Not present, not here',
+                'quietly': 'Without making much noise',
+                'belt': 'Strip of leather or cloth for holding pants',
+                'noise': 'Loud sound that bothers people',
+                'unhappy': 'Sad, not happy',
+                'practise': 'To do something many times to get better',
+                'focus': 'To pay close attention to something',
+                'relax': 'To rest and not work',
+                'advice': 'Suggestions about what to do',
+                'understand': 'To know the meaning of something'
+            };
+            
+            return definitions[word.word.toLowerCase()] || `A word related to ${word.chinese}`;
+        }
+        
+        function swatWord(card, word) {
+            totalSwats++;
+            
+            if (word === currentWord.word) {
+                // Correct!
+                card.classList.add('hit');
+                wordsHit++;
+                
+                showMessage(`🎉 Correct! The word is "${currentWord.word}"`, 'success');
+                
+                // Disable further clicking
+                gameActive = false;
+                document.getElementById('team1-btn').disabled = true;
+                document.getElementById('team2-btn').disabled = true;
+                
+                // Hide fly swatter
+                document.getElementById('fly-swatter').classList.remove('active');
+                
+            } else {
+                // Wrong
+                card.classList.add('wrong');
+                setTimeout(() => {
+                    card.classList.remove('wrong');
+                }, 600);
+                
+                totalSwats++;
+            }
+            
+            updateStats();
+        }
+        
+        function awardPoint(team) {
+            if (team === 1) {
+                team1Score += 10;
+                showMessage(`🏠 Team 1 earns 10 points!`, 'success');
+            } else {
+                team2Score += 10;
+                showMessage(`🏢 Team 2 earns 10 points!`, 'success');
+            }
+            
+            updateScores();
+        }
+        
+        function nextRound() {
+            if (currentWord) {
+                usedWords.push(currentWord.word);
+            }
+            
+            roundNumber++;
+            gameActive = false;
+            currentTeam = currentTeam === 1 ? 2 : 1;
+            
+            // Reset displays
+            document.getElementById('current-word').textContent = 'Click "Start Game" for next round!';
+            document.getElementById('current-definition').textContent = '点击"开始游戏"进行下一回合！';
+            document.getElementById('timer').textContent = '⏱️ Ready';
+            
+            // Reset buttons
+            document.getElementById('start-btn').disabled = false;
+            document.getElementById('team1-btn').disabled = true;
+            document.getElementById('team2-btn').disabled = true;
+            
+            // Update team panels
+            document.getElementById('team1-panel').classList.toggle('active', currentTeam === 1);
+            document.getElementById('team2-panel').classList.toggle('active', currentTeam === 2);
+            
+            // Clear word grid
+            document.getElementById('word-grid').innerHTML = '';
+            
+            // Update displays
+            updateStats();
+            updateScores();
+            
+            clearInterval(gameTimer);
+        }
+        
+        function resetGame() {
+            if (confirm('Are you sure you want to reset the game?')) {
+                team1Score = 0;
+                team2Score = 0;
+                roundNumber = 1;
+                currentTeam = 1;
+                wordsHit = 0;
+                totalSwats = 0;
+                gameActive = false;
+                usedWords = [];
+                currentWord = null;
+                
+                // Reset displays
+                document.getElementById('current-word').textContent = 'Click "Start Game" to begin!';
+                document.getElementById('current-definition').textContent = '点击"开始游戏"开始！';
+                document.getElementById('timer').textContent = '⏱️ Ready';
+                
+                // Reset buttons
+                document.getElementById('start-btn').disabled = false;
+                document.getElementById('team1-btn').disabled = true;
+                document.getElementById('team2-btn').disabled = true;
+                
+                // Reset team panels
+                document.getElementById('team1-panel').classList.add('active');
+                document.getElementById('team2-panel').classList.remove('active');
+                
+                // Clear word grid
+                document.getElementById('word-grid').innerHTML = '';
+                
+                // Hide fly swatter
+                document.getElementById('fly-swatter').classList.remove('active');
+                
+                clearInterval(gameTimer);
+                
+                updateStats();
+                updateScores();
+                
+                showMessage('🔄 Game reset!', 'info');
+            }
+        }
+        
+        function startGameTimer() {
+            clearInterval(gameTimer);
+            gameTimer = setInterval(() => {
+                if (!startTime) return;
+                
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                const minutes = Math.floor(elapsed / 60);
+                const seconds = elapsed % 60;
+                
+                document.getElementById('game-time').textContent = 
+                    `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+        
+        function updateScores() {
+            document.getElementById('team1-points').textContent = team1Score;
+            document.getElementById('team2-points').textContent = team2Score;
+        }
+        
+        function updateStats() {
+            document.getElementById('round-number').textContent = roundNumber;
+            document.getElementById('words-hit').textContent = wordsHit;
+            
+            const accuracy = totalSwats > 0 ? Math.round((wordsHit / totalSwats) * 100) : 0;
+            document.getElementById('accuracy').textContent = accuracy + '%';
+        }
+        
+        function endGame() {
+            gameActive = false;
+            clearInterval(gameTimer);
+            
+            const winner = team1Score > team2Score ? 'Team 1' : team2Score === team1Score ? 'Tie' : 'Team 2';
+            const winnerCN = team1Score > team2Score ? '1队' : team2Score === team1Score ? '平局' : '2队';
+            
+            showMessage(`🏆 Game Over! Winner: ${winner} (${winnerCN})!`, 'success');
+            
+            // Save stats
+            updateUnitStats();
+        }
+        
+        function updateUnitStats() {
+            const stats = JSON.parse(localStorage.getItem('unit2-stats') || '{}');
+            stats.gamesPlayed = (stats.gamesPlayed || 0) + 1;
+            stats.totalScore = (stats.totalScore || 0) + Math.max(team1Score, team2Score);
+            stats.bestScore = Math.max(stats.bestScore || 0, Math.max(team1Score, team2Score));
+            stats.totalAttempts = (stats.totalAttempts || 0) + 1;
+            stats.correctAnswers = (stats.correctAnswers || 0) + wordsHit;
+            localStorage.setItem('unit2-stats', JSON.stringify(stats));
+        }
+        
+        function showMessage(text, type) {
+            const messageContainer = document.getElementById('message');
+            messageContainer.innerHTML = `<div class="message ${type}">${text}</div>`;
+            
+            setTimeout(() => {
+                messageContainer.innerHTML = '';
+            }, 3000);
+        }
+        
+        // Initialize game
+        function initGame() {
+            updateScores();
+            updateStats();
+            showMessage('🎮 Welcome to Fly Swatter! Click "Start Game" to begin!', 'info');
+        }
+        
+        document.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>

@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocabulary Bingo - Unit 8 Once upon a Time</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Fredoka', cursive;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .game-container {
+            background: white;
+            border-radius: 25px;
+            padding: 40px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            max-width: 1400px;
+            width: 100%;
+        }
+        
+        .game-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border: 3px solid #e0e0e0;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ff6b6b;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .teacher-controls {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(255,107,107,0.4);
+        }
+        
+        .controls-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+        
+        .current-word {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .word-display {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .definition {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+        
+        .btn {
+            background: white;
+            border: 2px solid #ff6b6b;
+            color: #ff6b6b;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px 5px;
+        }
+        
+        .btn:hover {
+            background: #ff8e53;
+            color: white;
+            transform: scale(1.05);
+        }
+        
+        .btn.primary {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(76,175,80,0.4);
+            margin: 10px 5px;
+        }
+        
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        
+        .timer-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .timer-display {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ff6b6b;
+        }
+        
+        .round-info {
+            background: #e3f2fd;
+            border: 3px solid #2196f3;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 1rem;
+            color: #1976d2;
+            font-weight: 600;
+        }
+        
+        .bingo-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .bingo-card {
+            background: white;
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .bingo-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .player-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #333;
+        }
+        
+        .score {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ff6b6b;
+        }
+        
+        .bingo-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .bingo-cell {
+            aspect-ratio: 1;
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .bingo-cell:hover {
+            background: #e8f5e8;
+            border-color: #4CAF50;
+            transform: scale(1.05);
+            z-index: 1;
+        }
+        
+        .bingo-cell.marked {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border-color: #4CAF50;
+            animation: correctPulse 0.6s ease;
+        }
+        
+        @keyframes correctPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .bingo-cell.free {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #333;
+            border-color: #ffd700;
+            font-weight: 700;
+            transform: scale(1.05);
+        }
+        
+        .cell-text {
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-align: center;
+            line-height: 1.2;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(76,175,80,0.4);
+            margin: 5px;
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(76,175,80,0.6);
+        }
+        
+        .btn.secondary {
+            background: linear-gradient(45deg, #ff9800, #f57c00);
+            box-shadow: 0 4px 15px rgba(255,152,0,0.4);
+        }
+        
+        .btn.danger {
+            background: linear-gradient(45deg, #f44336, #da190b);
+            box-shadow: 0 4px 15px rgba(244,67,54,0.4);
+        }
+        
+        .message {
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+        
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+        
+        .message.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 2px solid #bee5eb;
+        }
+        
+        .message.warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 2px solid #ffeaa7;
+        }
+        
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+        
+        .voice-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .voice-btn {
+            background: linear-gradient(45deg, #9c27b0, #7b1fa2);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(156,39,176,0.4);
+        }
+        
+        .voice-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(156,39,176,0.6);
+        }
+        
+        .voice-btn.speaking {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            animation: speaking 1s infinite;
+        }
+        
+        @keyframes speaking {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .speed-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .speed-selector {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+        
+        .speed-input {
+            width: 80px;
+            padding: 5px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .results-panel {
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 25px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+        
+        .results-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .word-list {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .used-word {
+            background: #e8f5e8;
+            color: #2e7d32;
+            padding: 8px 15px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .word-text {
+            font-weight: 600;
+            color: #2e7d32;
+        }
+        
+        .word-type {
+            font-size: 0.8rem;
+            color: #666;
+            font-style: italic;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .bingo-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .bingo-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .bingo-cell {
+                font-size: 0.8rem;
+                padding: 10px 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="location.href='index.html'">← Back to Home</button>
+    
+    <header>
+        <h1>🎪 Vocabulary Bingo - Fairy Tales</h1>
+        <p>Listen to fairy tale words and mark your card!<br><span style="font-size: 1.2rem;">词汇宾果 - 童话故事</span></p>
+    </header>
+    
+    <main class="game-container">
+        <div class="game-stats">
+            <div class="stat-item">
+                <div class="stat-value" id="words-found">0</div>
+                <div class="stat-label">Words Found<br><span style="font-size: 0.8rem;">找到单词</span></div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="total-words">0</div>
+                <div class="stat-label">Total Words<br><span style="font-size: 0.8rem;">总单词数</span></div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="time-elapsed">0:00</div>
+                <div class="stat-label">Time<br><span style="font-size: 0.8rem;">时间</span></div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="best-score">0</div>
+                <div class="stat-label">Best Score<br><span style="font-size: 0.8rem;">最高分</span></div>
+            </div>
+        </div>
+        
+        <div id="message"></div>
+        
+        <div class="teacher-controls">
+            <div class="controls-title">📚 Teacher Controls<br><span style="font-size: 0.9rem;">教师控制</span></div>
+            
+            <div class="current-word">
+                <div class="word-display" id="current-word">
+                    Click "Call Word" to begin!
+                </div>
+                <div class="definition" id="definition">
+                    <div class="definition-text">Get ready to call words!</div>
+                    <div class="word-chinese">准备开始叫词！</div>
+                </div>
+            </div>
+            
+            <div class="timer-section">
+                <div class="timer-display" id="teacher-timer">60</div>
+                <div class="round-info">
+                    <div class="round-info">
+                        Word <span id="word-number">1</span> / <span id="total-words">15</span>
+                    </div>
+                    <div class="round-info">
+                        Time <span id="time-left">60</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="voice-controls">
+                <button class="voice-btn" id="speak-btn" onclick="speakCurrentWord()">
+                    🔊 Speak<br><span style="font-size: 0.8rem;">朗读</span>
+                </button>
+                <button class="voice-btn" id="speak-def-btn" onclick="speakDefinition()">
+                    📖️ Speak Definition<br><span style="font-size: 0.8rem;">读定义</span>
+                </button>
+                
+                <div class="speed-control">
+                    <div class="speed-label">Speed:</div>
+                    <div class="speed-selector">
+                        <button class="speed-btn active" onclick="setSpeed('slow')">Slow</button>
+                        <button class="speed-btn" onclick="setSpeed('normal')">Normal</button>
+                        <button class="speed-btn" onclick="setSpeed('fast')">Fast</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button class="btn primary" onclick="callWord()">
+                    📢 Call Word<br><span style="font-size: 0.9rem;">叫词</span>
+                </button>
+                <button class="btn secondary" onclick="nextWord()">
+                    ⏭️ Next Word<br><span style="font-size: 0.9rem;">下一个词</span>
+                </button>
+                <button class="btn secondary" onclick="markCorrect()">
+                    ✅ Mark Correct<br><span style="font-size: 0.9rem;">标记正确</span>
+                </button>
+                <button class="btn danger" onclick="skipWord()">
+                    ⏭️ Skip<br><span style="font-size: 0.9rem;">跳过</span>
+                </button>
+                <button class="btn danger" onclick="resetGame()">
+                    🔄 Reset<br><span style="font-size: 0.9rem;">重置</span>
+                </button>
+            </div>
+        </div>
+        
+        <div class="bingo-cards" id="bingo-cards">
+            <!-- Bingo cards will be generated here -->
+        </div>
+        
+        <div class="results-panel">
+            <div class="results-title">🏆 Game Results<br><span style="font-size: 0.9rem;">游戏结果</span></div>
+            <div class="word-list" id="used-words">
+                <!-- Used words will be added here -->
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h3>📋 Fairy Tale Bingo Rules / 童话宾果规则</h3>
+            <ul>
+                <li>Listen carefully as the teacher calls out words<br>仔细听老师叫出的单词</li>
+                <li>Mark the word on your card when found<br>找到单词时在卡片上标记</li>
+                <li>First to complete a row wins the round<br>最先完成一行获胜该回合</li>
+                <li>Free center space is automatically marked<br>中间自由空间自动标记</li>
+                <li>Win with most correct words overall<br>整体猜对最多单词获胜</li>
+            </ul>
+        </div>
+    </main>
+    
+    <script>
+        // Unit 8 Fairy Tale Vocabulary
+        const vocabulary = {
+            core: [
+                { word: "prince", chinese: "王子", type: "character" },
+                { word: "princess", chinese: "公主", type: "character" },
+                { word: "dragon", chinese: "龙", type: "character" },
+                { word: "wizard", chinese: "巫师", type: "character" },
+                { word: "knight", chinese: "骑士", type: "character" },
+                { word: "fairy", chinese: "仙女", type: "character" },
+                { word: "witch", chinese: "女巫", type: "character" },
+                { word: "castle", chinese: "城堡", type: "place" },
+                { word: "kingdom", chinese: "王国", type: "place" },
+                { word: "forest", chinese: "森林", type: "place" },
+                { word: "magic", chinese: "魔法", type: "concept" },
+                { word: "sword", chinese: "剑", type: "object" },
+                { word: "crown", chinese: "王冠", type: "object" },
+                { word: "tower", chinese: "塔", type: "place" },
+                { word: "king", chinese: "国王", type: "character" },
+                { word: "queen", chinese: "王后", type: "character" },
+                { word: "giant", chinese: "巨人", type: "character" },
+                { word: "dwarf", chinese: "矮人", type: "character" },
+                { word: "unicorn", chinese: "独角兽", type: "character" },
+                { word: "potion", chinese: "药水", type: "object" }
+            ]
+        };
+        
+        // Combine all vocabulary for the game
+        const allWords = [...vocabulary.core];
+        
+        // Game state
+        let currentWord = null;
+        let currentWordIndex = 0;
+        let usedWords = [];
+        let wordsFound = [];
+        let timeLeft = 60;
+        let timerInterval = null;
+        let gameActive = false;
+        let speaking = null;
+        
+        // Teacher state
+        let speechSpeed = 'normal';
+        let totalWords = 15; // Words per round
+        let roundNumber = 1;
+        let startTime = null;
+        let timeElapsed = 0;
+        
+        // Team scores
+        let teams = [];
+        let activeTeam = 0;
+        
+        function initGame() {
+            // Initialize 2 teams by default
+            teams = [
+                { name: 'Team Red', members: [], score: 0, card: null },
+                { name: 'Team Blue', members: [], score: 0, card: null }
+            ];
+            
+            generateBingoCards();
+            updateStats();
+            
+            showMessage('🎪 Welcome to Fairy Tale Bingo! Set up your teams and click "Call Word"!', 'info');
+        }
+        
+        function generateBingoCards() {
+            const container = document.getElementById('bingo-cards');
+            container.innerHTML = '';
+            
+            // Create bingo cards for each team
+            teams.forEach((team, teamIndex) => {
+                const cardDiv = document.createElement('div');
+                cardDiv.className = 'bingo-card';
+                cardDiv.dataset.team = teamIndex;
+                
+                const cardHeader = document.createElement('div');
+                cardHeader.className = 'card-header';
+                cardHeader.innerHTML = `
+                    <div class="player-name">${team.name}</div>
+                    <div class="score">${team.score}</div>
+                `;
+                
+                const bingoGrid = document.createElement('div');
+                bingoGrid.className = 'bingo-grid';
+                
+                // Generate 5x5 grid for each team
+                for (let i = 0; i < 25; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'bingo-cell';
+                    cell.dataset.team = teamIndex;
+                    cell.dataset.index = i;
+                    
+                    // Free space in center
+                    if (i === 12) {
+                        cell.className += ' free';
+                        cell.textContent = 'FREE';
+                    }
+                    
+                    // Place random words in other cells
+                    if (i !== 12) {
+                        const availableWords = allWords.filter(w => !usedWords.includes(w.word));
+                        if (availableWords.length > 0) {
+                            const randomWord = availableWords[Math.floor(Math.random() * availableWords.length)];
+                            usedWords.push(randomWord.word);
+                            cell.textContent = randomWord.word.toUpperCase();
+                        }
+                    }
+                    
+                    bingoGrid.appendChild(cell);
+                }
+                
+                cardDiv.appendChild(cardHeader);
+                cardDiv.appendChild(bingoGrid);
+                container.appendChild(cardDiv);
+            });
+        }
+        
+        function callWord() {
+            if (!gameActive) {
+                gameActive = true;
+                currentRound = 1;
+                wordsFound = [];
+                startTime = Date.now();
+                
+                // Select random word
+                const availableWords = allWords.filter(w => !usedWords.includes(w.word));
+                if (availableWords.length === 0) {
+                    showMessage('🎉 All words have been used!', 'warning');
+                    endGame();
+                    return;
+                }
+                
+                currentWordIndex = Math.floor(Math.random() * availableWords.length);
+                currentWord = availableWords[currentWordIndex];
+                usedWords.push(currentWord.word);
+                
+                // Clear previous markings
+                clearAllMarkings();
+                
+                // Update display
+                updateWordDisplay();
+                startTimer();
+                
+                // Enable controls
+                document.getElementById('teacher-timer').style.color = '#ff6b6b';
+                
+                showMessage(`📢 Teacher: "${currentWord.word}"`, 'info');
+            }
+        }
+        
+        function speakCurrentWord() {
+            if (!currentWord) return;
+            
+            // Cancel any previous speech
+            if (speaking) {
+                window.speechSynthesis.cancel();
+                speaking = null;
+            }
+            
+            const utterance = new SpeechSynthesisUtterance(currentWord.word);
+            utterance.rate = speechSpeed === 'slow' ? 0.8 : speechSpeed === 'fast' ? 1.2 : 1.0;
+            utterance.pitch = 1.2;
+            utterance.volume = 1;
+            utterance.lang = 'en-US';
+            
+            speaking = window.speechSynthesis.speak(utterance);
+        }
+        
+        function speakDefinition() {
+            if (!currentWord) return;
+            
+            // Cancel any previous speech
+            if (speaking) {
+                window.speechSynthesis.cancel();
+                speaking = null;
+            }
+            
+            const definition = `This is ${currentWord.word}. It's a type of ${currentWord.type}`;
+            
+            const utterance = new SpeechSynthesisUtterance(definition);
+            utterance.rate = speechSpeed === 'slow' ? 0.8 : speechSpeed === 'fast' ? 1.2 : 1.0;
+            utterance.pitch = 1.2;
+            utterance.volume = 1;
+            utterance.lang = 'en-US';
+            
+            speaking = window.speechSynthesis.speak(utterance);
+        }
+        
+        function setSpeed(speed) {
+            speechSpeed = speed;
+            
+            // Update speed buttons
+            document.querySelectorAll('.speed-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.toLowerCase() === speed) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+        
+        function updateWordDisplay() {
+            const wordDisplay = document.getElementById('current-word');
+            const definition = document.getElementById('definition');
+            
+            if (currentWord) {
+                wordDisplay.innerHTML = currentWord.word.toUpperCase();
+                definition.innerHTML = `
+                    <div class="definition-text">${currentWord.chinese}</div>
+                    <div class="word-chinese">Type: ${currentWord.type}</div>
+                `;
+            } else {
+                wordDisplay.textContent = 'Click "Call Word" to begin!';
+                definition.textContent = 'Get ready to call words!';
+            }
+        }
+        
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('teacher-timer').textContent = timeLeft;
+                document.getElementById('time-left').textContent = timeLeft;
+                
+                if (timeLeft <= 10) {
+                    document.getElementById('teacher-timer').style.color = '#ff0000';
+                } else {
+                    document.getElementById('teacher-timer').style.color = '#ff6b6b';
+                }
+                
+                if (timeLeft <= 0) {
+                    timeUp();
+                }
+            }, 1000);
+            
+            startTime = Date.now();
+        }
+        
+        function timeUp() {
+            clearInterval(timerInterval);
+            gameActive = false;
+            
+            // Check if round is complete
+            const availableWords = allWords.filter(w => !usedWords.includes(w.word));
+            if (availableWords.length === 0) {
+                showMessage('🎉 All words have been called! Game Over!', 'warning');
+                endGame();
+            } else {
+                showMessage(`⏰ Time's up! Moving to next word...`, 'warning');
+            }
+        }
+        
+        function markCorrect() {
+            if (!currentWord || !gameActive) return;
+            
+            // Mark word on all bingo cards
+            markCorrectGuess(currentWord.word);
+            
+            // Add to found words
+            wordsFound.push(currentWord.word);
+            
+            // Update used words display
+            updateUsedWords();
+            
+            showMessage(`✅ "${currentWord.word}" marked as correct!`, 'success');
+            
+            // Move to next word after 2 seconds
+            setTimeout(() => {
+                nextWord();
+            }, 2000);
+        }
+        
+        function markCorrectGuess(word) {
+            // Mark word on all bingo cards
+            document.querySelectorAll('.bingo-cell').forEach(cell => {
+                if (cell.textContent && cell.textContent.toLowerCase() === word.toLowerCase()) {
+                    cell.classList.add('marked');
+                }
+            });
+        }
+        
+        function clearAllMarkings() {
+            document.querySelectorAll('.bingo-cell').forEach(cell => {
+                cell.classList.remove('marked');
+            });
+        }
+        
+        function nextWord() {
+            // Select next available word
+            const availableWords = allWords.filter(w => !usedWords.includes(w.word));
+            if (availableWords.length === 0) {
+                endGame();
+                return;
+            }
+            
+            currentWordIndex = Math.floor(Math.random() * availableWords.length);
+            currentWord = availableWords[currentWordIndex];
+            usedWords.push(currentWord.word);
+            
+            updateWordDisplay();
+            startTimer();
+            
+            showMessage(`📢 Next word: "${currentWord}"`, 'info');
+        }
+        
+        function skipWord() {
+            if (!currentWord || !gameActive) return;
+            
+            // Penalize team scores
+            teams.forEach(team => {
+                team.score = Math.max(0, team.score - 5);
+            });
+            
+            showMessage(`⏭️ "${currentWord}" skipped! Teams penalized -5 points`, 'warning');
+            
+            usedWords.push(currentWord);
+            wordsFound.push(currentWord);
+            
+            // Move to next word
+            setTimeout(() => {
+                nextWord();
+            }, 1000);
+        }
+        
+        function updateUsedWords() {
+            const usedWordsContainer = document.getElementById('used-words');
+            usedWordsContainer.innerHTML = '';
+            
+            wordsFound.forEach(word => {
+                const wordData = allWords.find(w => w.word === word);
+                if (wordData) {
+                    const wordDiv = document.createElement('div');
+                    wordDiv.className = 'used-word';
+                    wordDiv.innerHTML = `
+                        <span class="word-text">${wordData.word}</span>
+                        <span class="word-type"> - ${wordData.chinese}</span>
+                    `;
+                    usedWordsContainer.appendChild(wordDiv);
+                }
+            });
+        }
+        
+        function endGame() {
+            gameActive = false;
+            clearInterval(timerInterval);
+            
+            // Stop speech
+            if (speaking) {
+                window.speechSynthesis.cancel();
+                speaking = null;
+            }
+            
+            // Show final results
+            showMessage('🎉 Game Over! Final results:', 'info');
+            
+            // Check for overall winner
+            let winner = teams[0];
+            let maxScore = 0;
+            
+            teams.forEach(team => {
+                if (team.score > maxScore) {
+                    winner = team;
+                    maxScore = team.score;
+                }
+            });
+            
+            if (winner) {
+                showMessage(`🏆 ${winner.name} wins with ${winner.score} points!`, 'success');
+            } else {
+                showMessage('🏮 Game Over! It\'s a tie!', 'info');
+            }
+            
+            updateStats();
+        }
+        
+        function updateStats() {
+            const totalWordsEl = document.getElementById('total-words');
+            const wordsFoundEl = document.getElementById('words-found');
+            const timeElapsedEl = document.getElementById('time-elapsed');
+            
+            if (totalWordsEl) {
+                totalWordsEl.textContent = wordsFound.length;
+            }
+            
+            if (timeElapsedEl) {
+                const minutes = Math.floor(timeElapsed / 60);
+                const seconds = timeElapsed % 60;
+                timeElapsedEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }
+            
+            document.getElementById('best-score').textContent = Math.max(
+                localStorage.getItem('unit8-best-score') || 0,
+                teams[0].score, teams[1].score
+            );
+        }
+        
+        function resetGame() {
+            if (confirm('Are you sure you want to reset the game? This will clear all progress and scores.')) {
+                // Reset everything
+                usedWords = [];
+                wordsFound = [];
+                timeLeft = 60;
+                gameActive = false;
+                currentWord = null;
+                currentRound = 1;
+                startTime = null;
+                
+                teams = [
+                    { name: 'Team Red', members: [], score: 0, card: null },
+                    { name: 'Team Blue', members: [], score: 0, card: null }
+                ];
+                
+                // Clear all markings
+                clearAllMarkings();
+                
+                // Reset displays
+                updateWordDisplay();
+                document.getElementById('word-number').textContent = '1';
+                document.getElementById('total-words').textContent = '15';
+                document.getElementById('timer').textContent = '60';
+                document.getElementById('teacher-timer').style.color = '#ff6b6b';
+                
+                // Clear cards
+                generateBingoCards();
+                updateStats();
+                
+                // Clear used words
+                document.getElementById('used-words').innerHTML = '';
+                
+                showMessage('🔄 Game reset! All progress cleared!', 'info');
+            }
+        }
+        
+        function showMessage(text, type) {
+            const messageContainer = document.getElementById('message');
+            messageContainer.innerHTML = `<div class="message ${type}">${text}</div>`;
+            
+            setTimeout(() => {
+                messageContainer.innerHTML = '';
+            }, 3000);
+        }
+        
+        // Initialize game
+        window.onload = initGame;
+    </script>
+</body>
+</html>

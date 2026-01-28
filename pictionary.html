@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pictionary - Vocabulary Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Fredoka', cursive;
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 1200px;
+            width: 100%;
+        }
+        
+        .game-layout {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .word-panel {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+        }
+        
+        .word-display {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 15px;
+        }
+        
+        .timer {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+        
+        .timer-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .timer-fill {
+            height: 100%;
+            background: white;
+            transition: width 1s linear;
+            border-radius: 5px;
+        }
+        
+        .drawing-area {
+            background: white;
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            position: relative;
+        }
+        
+        #canvas {
+            display: block;
+            cursor: crosshair;
+            border-radius: 12px;
+            width: 100%;
+            height: 400px;
+        }
+        
+        .drawing-tools {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+        }
+        
+        .tool-section {
+            margin-bottom: 20px;
+        }
+        
+        .tool-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .color-palette {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .color-btn {
+            width: 40px;
+            height: 40px;
+            border: 3px solid transparent;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .color-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .color-btn.active {
+            border-color: #333;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+        
+        .brush-sizes {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .size-btn {
+            background: #e0e0e0;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .size-btn:hover {
+            background: #ccc;
+        }
+        
+        .size-btn.active {
+            background: #667eea;
+        }
+        
+        .size-btn.small { width: 20px; height: 20px; }
+        .size-btn.medium { width: 30px; height: 30px; }
+        .size-btn.large { width: 40px; height: 40px; }
+        
+        .tool-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .tool-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .tool-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(255,107,107,0.4);
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(76,175,80,0.4);
+        }
+        
+        .btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(76,175,80,0.6);
+        }
+        
+        .btn.secondary {
+            background: linear-gradient(45deg, #ff9800, #f57c00);
+        }
+        
+        .btn.danger {
+            background: linear-gradient(45deg, #f44336, #da190b);
+        }
+        
+        .score-panel {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+        
+        .score-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .score-value {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .teams-section {
+            margin-top: 15px;
+        }
+        
+        .team {
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .team.active {
+            border-color: #667eea;
+            background: #e8f0fe;
+        }
+        
+        .team-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .team-score {
+            font-size: 1.5rem;
+            color: #667eea;
+            font-weight: 700;
+        }
+        
+        .guess-input {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+        
+        .guess-field {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .guess-input-field {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-family: 'Fredoka', cursive;
+        }
+        
+        .guess-input-field:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .guess-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .guess-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .message {
+            background: #d4edda;
+            border: 2px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .message.error {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+        
+        .instructions {
+            background: #fff3cd;
+            border: 2px solid #ffeaa7;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="location.href='index.html'">← Back to Games</button>
+    
+    <header>
+        <h1>🎨 Pictionary Game</h1>
+        <p>Draw and guess the animal words!</p>
+    </header>
+    
+    <main class="game-container">
+        <div class="instructions">
+            📋 Draw the word without using letters or numbers. Your team guesses what you're drawing!
+        </div>
+        
+        <div class="game-layout">
+            <div class="word-panel">
+                <div class="word-display" id="word-display">
+                    Press "New Word" to start!
+                </div>
+                <div class="timer" id="timer">60</div>
+                <div class="timer-bar">
+                    <div class="timer-fill" id="timer-fill"></div>
+                </div>
+                <div class="teams-section">
+                    <div class="team active" id="team1">
+                        <div class="team-name">Team 1</div>
+                        <div class="team-score" id="team1-score">0</div>
+                    </div>
+                    <div class="team" id="team2">
+                        <div class="team-name">Team 2</div>
+                        <div class="team-score" id="team2-score">0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="drawing-area">
+                <canvas id="canvas"></canvas>
+                <div class="guess-input">
+                    <div id="message"></div>
+                    <div class="guess-field">
+                        <input type="text" class="guess-input-field" id="guess-input" placeholder="Type your guess here...">
+                        <button class="guess-btn" onclick="checkGuess()">Guess!</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="drawing-tools">
+                <div class="score-panel">
+                    <div class="score-title">Round Score</div>
+                    <div class="score-value" id="round-score">0</div>
+                </div>
+                
+                <div class="tool-section">
+                    <label class="tool-label">Colors</label>
+                    <div class="color-palette">
+                        <div class="color-btn active" style="background: #000000" onclick="changeColor('#000000')"></div>
+                        <div class="color-btn" style="background: #ff0000" onclick="changeColor('#ff0000')"></div>
+                        <div class="color-btn" style="background: #00ff00" onclick="changeColor('#00ff00')"></div>
+                        <div class="color-btn" style="background: #0000ff" onclick="changeColor('#0000ff')"></div>
+                        <div class="color-btn" style="background: #ffff00" onclick="changeColor('#ffff00')"></div>
+                        <div class="color-btn" style="background: #ff00ff" onclick="changeColor('#ff00ff')"></div>
+                        <div class="color-btn" style="background: #00ffff" onclick="changeColor('#00ffff')"></div>
+                        <div class="color-btn" style="background: #ff8c00" onclick="changeColor('#ff8c00')"></div>
+                        <div class="color-btn" style="background: #8b4513" onclick="changeColor('#8b4513')"></div>
+                        <div class="color-btn" style="background: #808080" onclick="changeColor('#808080')"></div>
+                    </div>
+                </div>
+                
+                <div class="tool-section">
+                    <label class="tool-label">Brush Size</label>
+                    <div class="brush-sizes">
+                        <button class="size-btn small" onclick="changeSize(2)"></button>
+                        <button class="size-btn medium active" onclick="changeSize(5)"></button>
+                        <button class="size-btn large" onclick="changeSize(10)"></button>
+                    </div>
+                </div>
+                
+                <div class="tool-section">
+                    <div class="tool-buttons">
+                        <button class="tool-btn" onclick="clearCanvas()">Clear All</button>
+                        <button class="tool-btn" onclick="toggleEraser()">Eraser</button>
+                        <button class="tool-btn" onclick="undoLast()">Undo</button>
+                        <button class="tool-btn" onclick="downloadDrawing()">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn" onclick="newWord()">New Word</button>
+            <button class="btn secondary" onclick="switchTeams()">Switch Teams</button>
+            <button class="btn danger" onclick="revealWord()">Reveal Word</button>
+        </div>
+    </main>
+    
+    <script>
+        const vocabulary = [
+            'ELEPHANT', 'GIRAFFE', 'LION', 'TIGER', 'MONKEY',
+            'PENGUIN', 'DOLPHIN', 'BUTTERFLY', 'SNAKE', 'TURTLE',
+            'RABBIT', 'BEAR', 'FOX', 'WOLF', 'EAGLE',
+            'CROCODILE', 'HIPPO', 'ZEBRA', 'KANGAROO', 'KOALA'
+        ];
+        
+        let currentWord = '';
+        let currentTeam = 1;
+        let team1Score = 0;
+        let team2Score = 0;
+        let roundScore = 0;
+        let timeLeft = 60;
+        let timerInterval = null;
+        let gameActive = false;
+        
+        // Drawing variables
+        let canvas, ctx;
+        let isDrawing = false;
+        let currentColor = '#000000';
+        let currentSize = 5;
+        let drawingHistory = [];
+        let historyStep = -1;
+        
+        function initCanvas() {
+            canvas = document.getElementById('canvas');
+            ctx = canvas.getContext('2d');
+            
+            // Set canvas size
+            canvas.width = canvas.offsetWidth;
+            canvas.height = 400;
+            
+            // Set initial styles
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            
+            // Drawing events
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+            
+            // Touch events for mobile
+            canvas.addEventListener('touchstart', handleTouch);
+            canvas.addEventListener('touchmove', handleTouch);
+            canvas.addEventListener('touchend', stopDrawing);
+        }
+        
+        function startDrawing(e) {
+            isDrawing = true;
+            saveState();
+            
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        }
+        
+        function draw(e) {
+            if (!isDrawing) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            ctx.globalCompositeOperation = currentColor === '#ffffff' ? 'destination-out' : 'source-over';
+            ctx.strokeStyle = currentColor;
+            ctx.lineWidth = currentSize;
+            
+            ctx.lineTo(x, y);
+            ctx.stroke();
+        }
+        
+        function stopDrawing() {
+            if (isDrawing) {
+                isDrawing = false;
+                ctx.beginPath();
+            }
+        }
+        
+        function handleTouch(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const mouseEvent = new MouseEvent(e.type === 'touchstart' ? 'mousedown' : 
+                                             e.type === 'touchmove' ? 'mousemove' : 'mouseup', {
+                clientX: touch.clientX,
+                clientY: touch.clientY
+            });
+            canvas.dispatchEvent(mouseEvent);
+        }
+        
+        function changeColor(color) {
+            currentColor = color;
+            document.querySelectorAll('.color-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+        
+        function changeSize(size) {
+            currentSize = size;
+            document.querySelectorAll('.size-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+        
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            saveState();
+        }
+        
+        function toggleEraser() {
+            currentColor = currentColor === '#ffffff' ? '#000000' : '#ffffff';
+        }
+        
+        function saveState() {
+            historyStep++;
+            if (historyStep < drawingHistory.length) {
+                drawingHistory.length = historyStep;
+            }
+            drawingHistory.push(canvas.toDataURL());
+        }
+        
+        function undoLast() {
+            if (historyStep > 0) {
+                historyStep--;
+                const canvasPic = new Image();
+                canvasPic.src = drawingHistory[historyStep];
+                canvasPic.onload = function() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(canvasPic, 0, 0);
+                }
+            }
+        }
+        
+        function downloadDrawing() {
+            const link = document.createElement('a');
+            link.download = 'pictionary-drawing.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+        
+        function newWord() {
+            currentWord = vocabulary[Math.floor(Math.random() * vocabulary.length)];
+            document.getElementById('word-display').textContent = 'Your word: ' + currentWord;
+            
+            gameActive = true;
+            timeLeft = 60;
+            startTimer();
+            clearCanvas();
+            clearMessage();
+        }
+        
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').textContent = timeLeft;
+                
+                const percentage = (timeLeft / 60) * 100;
+                document.getElementById('timer-fill').style.width = percentage + '%';
+                
+                if (timeLeft <= 10) {
+                    document.getElementById('timer').style.color = '#ff0000';
+                } else {
+                    document.getElementById('timer').style.color = '#333';
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    gameActive = false;
+                    showMessage('⏰ Time\'s up! The word was: ' + currentWord, 'error');
+                }
+            }, 1000);
+        }
+        
+        function checkGuess() {
+            const guess = document.getElementById('guess-input').value.trim().toUpperCase();
+            
+            if (!guess) return;
+            
+            if (guess === currentWord) {
+                clearInterval(timerInterval);
+                gameActive = false;
+                
+                // Award points
+                const points = Math.ceil((timeLeft / 60) * 100);
+                roundScore += points;
+                
+                if (currentTeam === 1) {
+                    team1Score += points;
+                } else {
+                    team2Score += points;
+                }
+                
+                updateScores();
+                showMessage('🎉 Correct! +' + points + ' points!', 'success');
+                document.getElementById('guess-input').value = '';
+            } else {
+                showMessage('❌ Try again!', 'error');
+            }
+        }
+        
+        function switchTeams() {
+            currentTeam = currentTeam === 1 ? 2 : 1;
+            document.querySelectorAll('.team').forEach(team => {
+                team.classList.remove('active');
+            });
+            document.getElementById(`team${currentTeam}`).classList.add('active');
+            clearMessage();
+        }
+        
+        function revealWord() {
+            if (currentWord) {
+                showMessage('The word was: ' + currentWord, 'error');
+                clearInterval(timerInterval);
+                gameActive = false;
+            }
+        }
+        
+        function updateScores() {
+            document.getElementById('team1-score').textContent = team1Score;
+            document.getElementById('team2-score').textContent = team2Score;
+            document.getElementById('round-score').textContent = roundScore;
+        }
+        
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = `<div class="message ${type}">${text}</div>`;
+        }
+        
+        function clearMessage() {
+            document.getElementById('message').innerHTML = '';
+        }
+        
+        // Handle Enter key for guess input
+        document.getElementById('guess-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkGuess();
+            }
+        });
+        
+        // Initialize canvas when page loads
+        window.onload = function() {
+            initCanvas();
+            updateScores();
+            saveState(); // Save initial blank state
+        };
+    </script>
+</body>
+</html>

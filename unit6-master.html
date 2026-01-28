@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit 6 Master - Entertainment & Media</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Fredoka', cursive;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: white;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        h1 {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            font-size: 1.5rem;
+            color: #ffffff;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            max-width: 400px;
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            margin: 20px auto;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #feca57);
+            border-radius: 10px;
+            transition: width 2s ease;
+        }
+        
+        .vocabulary-preview {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 40px;
+            max-width: 800px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .vocabulary-preview h3 {
+            color: #feca57;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+        
+        .vocabulary-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+        }
+        
+        .vocab-word {
+            background: rgba(255,255,255,0.15);
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        .vocab-word:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            width: 100%;
+        }
+        
+        .game-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 25px;
+            padding: 35px;
+            text-align: center;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .game-card:hover::before {
+            left: 100%;
+        }
+        
+        .game-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            border-color: rgba(255,255,255,0.4);
+        }
+        
+        .game-icon {
+            font-size: 4.5rem;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+        }
+        
+        .game-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #fff;
+        }
+        
+        .game-subtitle {
+            font-size: 1.1rem;
+            color: #bbb;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+        
+        .game-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #feca57;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #ffffff;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .play-btn {
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255,107,107,0.4);
+        }
+        
+        .play-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(255,107,107,0.6);
+        }
+        
+        .difficulty-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        .audio-controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .audio-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        
+        .audio-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .stars {
+            color: #feca57;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-in {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .game-card {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🎬 Unit 6 Master</h1>
+        <p class="subtitle">Entertainment & Media - Entertainment Vocabulary Adventures!</p>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+    </header>
+    
+    <section class="vocabulary-preview animate-in">
+        <h3>🎭 Today's Entertainment Words</h3>
+        <div class="vocabulary-list" id="vocabList">
+            <!-- Words will be populated by JavaScript -->
+        </div>
+        <div class="audio-controls">
+            <button class="audio-btn" onclick="playAllWords()">🔊 Play All</button>
+            <button class="audio-btn" onclick="playRandomWord()">🎲 Random Word</button>
+        </div>
+    </section>
+    
+    <main class="games-grid">
+        <article class="game-card animate-in" style="animation-delay: 0.1s;" onclick="location.href='unit6-hangman.html'">
+            <div class="difficulty-badge">Classic</div>
+            <div class="game-icon">🎯</div>
+            <h2 class="game-title">Hangman</h2>
+            <p class="game-subtitle">Guess entertainment words letter by letter</p>
+            <div class="stars">⭐⭐⭐⭐⭐</div>
+            <div class="game-stats">
+                <div class="stat">
+                    <div class="stat-value">49</div>
+                    <div class="stat-label">Words</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">∞</div>
+                    <div class="stat-label">Rounds</div>
+                </div>
+            </div>
+            <button class="play-btn">Play Now</button>
+        </article>
+        
+        <article class="game-card animate-in" style="animation-delay: 0.2s;" onclick="location.href='unit6-charades.html'">
+            <div class="difficulty-badge">Team Play</div>
+            <div class="game-icon">🎭</div>
+            <h2 class="game-title">Charades</h2>
+            <p class="game-subtitle">Act out movies, music, and shows!</p>
+            <div class="stars">⭐⭐⭐⭐⭐</div>
+            <div class="game-stats">
+                <div class="stat">
+                    <div class="stat-value">60</div>
+                    <div class="stat-label">Seconds</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">2-4</div>
+                    <div class="stat-label">Teams</div>
+                </div>
+            </div>
+            <button class="play-btn">Play Now</button>
+        </article>
+        
+        <article class="game-card animate-in" style="animation-delay: 0.3s;" onclick="location.href='unit6-pictionary.html'">
+            <div class="difficulty-badge">Creative</div>
+            <div class="game-icon">🎨</div>
+            <h2 class="game-title">Pictionary</h2>
+            <p class="game-subtitle">Draw entertainment concepts!</p>
+            <div class="stars">⭐⭐⭐⭐⭐</div>
+            <div class="game-stats">
+                <div class="stat">
+                    <div class="stat-value">90</div>
+                    <div class="stat-label">Seconds</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">∞</div>
+                    <div class="stat-label">Drawing</div>
+                </div>
+            </div>
+            <button class="play-btn">Play Now</button>
+        </article>
+        
+        <article class="game-card animate-in" style="animation-delay: 0.4s;" onclick="location.href='unit6-bingo.html'">
+            <div class="difficulty-badge">Listening</div>
+            <div class="game-icon">🎪</div>
+            <h2 class="game-title">Vocabulary Bingo</h2>
+            <p class="game-subtitle">Listen and mark entertainment words!</p>
+            <div class="stars">⭐⭐⭐⭐⭐</div>
+            <div class="game-stats">
+                <div class="stat">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">Cards</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">🎵</div>
+                    <div class="stat-label">Audio</div>
+                </div>
+            </div>
+            <button class="play-btn">Play Now</button>
+        </article>
+    </main>
+    
+    <script>
+        // Unit 6 Entertainment & Media Vocabulary
+        const unit6Vocabulary = [
+            // Movies & TV
+            { english: "movie", chinese: "电影", category: "entertainment" },
+            { english: "cinema", chinese: "电影院", category: "entertainment" },
+            { english: "television", chinese: "电视", category: "entertainment" },
+            { english: "actor", chinese: "演员", category: "entertainment" },
+            { english: "actress", chinese: "女演员", category: "entertainment" },
+            { english: "director", chinese: "导演", category: "entertainment" },
+            { english: "character", chinese: "角色", category: "entertainment" },
+            { english: "screen", chinese: "屏幕", category: "entertainment" },
+            { english: "series", chinese: "连续剧", category: "entertainment" },
+            { english: "episode", chinese: "集", category: "entertainment" },
+            { english: "cartoon", chinese: "动画片", category: "entertainment" },
+            { english: "animation", chinese: "动画", category: "entertainment" },
+            { english: "documentary", chinese: "纪录片", category: "entertainment" },
+            { english: "comedy", chinese: "喜剧", category: "entertainment" },
+            { english: "drama", chinese: "戏剧", category: "entertainment" },
+            { english: "action", chinese: "动作", category: "entertainment" },
+            { english: "thriller", chinese: "惊悚片", category: "entertainment" },
+            
+            // Music & Performance
+            { english: "music", chinese: "音乐", category: "music" },
+            { english: "song", chinese: "歌曲", category: "music" },
+            { english: "concert", chinese: "音乐会", category: "music" },
+            { english: "performance", chinese: "表演", category: "music" },
+            { english: "musician", chinese: "音乐家", category: "music" },
+            { english: "singer", chinese: "歌手", category: "music" },
+            { english: "band", chinese: "乐队", category: "music" },
+            { english: "album", chinese: "专辑", category: "music" },
+            { english: "melody", chinese: "旋律", category: "music" },
+            { english: "rhythm", chinese: "节奏", category: "music" },
+            { english: "instrument", chinese: "乐器", category: "music" },
+            { english: "guitar", chinese: "吉他", category: "music" },
+            { english: "piano", chinese: "钢琴", category: "music" },
+            { english: "drum", chinese: "鼓", category: "music" },
+            { english: "stage", chinese: "舞台", category: "music" },
+            { english: "audience", chinese: "观众", category: "music" },
+            { english: "applause", chinese: "掌声", category: "music" },
+            
+            // Media & Technology
+            { english: "internet", chinese: "互联网", category: "media" },
+            { english: "website", chinese: "网站", category: "media" },
+            { english: "social media", chinese: "社交媒体", category: "media" },
+            { english: "video", chinese: "视频", category: "media" },
+            { english: "streaming", chinese: "流媒体", category: "media" },
+            { english: "podcast", chinese: "播客", category: "media" },
+            { english: "channel", chinese: "频道", category: "media" },
+            { english: "content", chinese: "内容", category: "media" },
+            { english: "platform", chinese: "平台", category: "media" },
+            { english: "subscribe", chinese: "订阅", category: "media" },
+            { english: "download", chinese: "下载", category: "media" },
+            { english: "upload", chinese: "上传", category: "media" },
+            { english: "share", chinese: "分享", category: "media" },
+            { english: "like", chinese: "点赞", category: "media" },
+            { english: "comment", chinese: "评论", category: "media" },
+            
+            // General Entertainment
+            { english: "game", chinese: "游戏", category: "entertainment" },
+            { english: "entertainment", chinese: "娱乐", category: "entertainment" },
+            { english: "fun", chinese: "乐趣", category: "entertainment" },
+            { english: "popular", chinese: "受欢迎的", category: "entertainment" },
+            { english: "famous", chinese: "著名的", category: "entertainment" }
+        ];
+        
+        // Populate vocabulary list
+        function populateVocabulary() {
+            const vocabList = document.getElementById('vocabList');
+            const previewWords = unit6Vocabulary.slice(0, 20); // Show first 20 words
+            
+            previewWords.forEach((word, index) => {
+                const wordElement = document.createElement('div');
+                wordElement.className = 'vocab-word';
+                wordElement.textContent = `${word.english} (${word.chinese})`;
+                wordElement.onclick = () => speakWord(word.english);
+                wordElement.style.animationDelay = `${index * 0.05}s`;
+                wordElement.classList.add('animate-in');
+                vocabList.appendChild(wordElement);
+            });
+        }
+        
+        // Speech synthesis
+        function speakWord(word) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(word);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.8;
+                speechSynthesis.speak(utterance);
+            }
+        }
+        
+        function playAllWords() {
+            const previewWords = unit6Vocabulary.slice(0, 10);
+            let index = 0;
+            
+            function speakNext() {
+                if (index < previewWords.length) {
+                    speakWord(previewWords[index].english);
+                    index++;
+                    setTimeout(speakNext, 2000);
+                }
+            }
+            speakNext();
+        }
+        
+        function playRandomWord() {
+            const randomWord = unit6Vocabulary[Math.floor(Math.random() * unit6Vocabulary.length)];
+            speakWord(randomWord.english);
+            
+            // Highlight the word if it's in the preview
+            const words = document.querySelectorAll('.vocab-word');
+            words.forEach(wordElement => {
+                if (wordElement.textContent.includes(randomWord.english)) {
+                    wordElement.style.background = 'rgba(254, 202, 87, 0.3)';
+                    setTimeout(() => {
+                        wordElement.style.background = 'rgba(255,255,255,0.15)';
+                    }, 2000);
+                }
+            });
+        }
+        
+        // Animate progress bar
+        function animateProgress() {
+            setTimeout(() => {
+                document.getElementById('progressBar').style.width = '85%'; // Unit 6 progress
+            }, 500);
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            populateVocabulary();
+            animateProgress();
+            
+            // Add entrance animations
+            const cards = document.querySelectorAll('.game-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                }, index * 200);
+            });
+        });
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            const cards = document.querySelectorAll('.game-card');
+            const currentIndex = Array.from(cards).findIndex(card => card.matches(':hover'));
+            
+            if (e.key === 'ArrowRight' && currentIndex < cards.length - 1) {
+                cards[currentIndex + 1].focus();
+            } else if (e.key === 'ArrowLeft' && currentIndex > 0) {
+                cards[currentIndex - 1].focus();
+            } else if (e.key === 'Enter' && currentIndex >= 0) {
+                cards[currentIndex].click();
+            }
+        });
+    </script>
+</body>
+</html>
